@@ -10,12 +10,11 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@Table(name = "users")
+@Table(name="users")
 public class User {
 
     @Id
     @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(updatable = false, nullable = false)
     private UUID id;
 
@@ -26,7 +25,7 @@ public class User {
     private String email;
 
     @Column(name = "password_hash", nullable = false)
-    private byte[] passwordHash;
+    private String passwordHash;
 
     @Column(name = "phone_number", nullable = false, length = 40)
     private String phoneNumber;
@@ -47,22 +46,18 @@ public class User {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    public User(UUID id, String username, String email, byte[] passwordHash, String phoneNumber,
-                AccessLevel accessLevel, Integer createdBy, LocalDateTime createdAt,
-                Integer updatedBy, LocalDateTime updatedAt) {
-        this.setId(id);
-        this.setUsername(username);
-        this.setEmail(email);
-        this.setPasswordHash(passwordHash);
-        this.setPhoneNumber(phoneNumber);
-        this.setAccessLevel(accessLevel);
-        this.setCreatedBy(createdBy);
-        this.setCreatedAt(createdAt);
-        this.setUpdatedBy(updatedBy);
-        this.setUpdatedAt(updatedAt);
+    public User(UUID id, String username, String email, String passwordHash, String phoneNumber, AccessLevel accessLevel, Integer createdBy, LocalDateTime createdAt, Integer updatedBy, LocalDateTime updatedAt) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.phoneNumber = phoneNumber;
+        this.accessLevel = accessLevel;
+        this.createdBy = createdBy;
+        this.createdAt = createdAt;
+        this.updatedBy = updatedBy;
+        this.updatedAt = updatedAt;
     }
-
-    // GETTERS
 
     public UUID getId() {
         return id;
@@ -76,7 +71,7 @@ public class User {
         return email;
     }
 
-    public byte[] getPasswordHash() {
+    public String getPasswordHash() {
         return passwordHash;
     }
 
@@ -88,16 +83,9 @@ public class User {
         return accessLevel;
     }
 
-    public Integer getCreatedBy() {
-        return createdBy;
-    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
-    }
-
-    public Integer getUpdatedBy() {
-        return updatedBy;
     }
 
     public LocalDateTime getUpdatedAt() {
@@ -136,8 +124,8 @@ public class User {
         this.email = trimmed;
     }
 
-    public void setPasswordHash(byte[] passwordHash) {
-        if (passwordHash == null || passwordHash.length == 0) {
+    public void setPasswordHash(String passwordHash) {
+        if (passwordHash == null || passwordHash.isEmpty()) {
             throw new InvalidPasswordException("Password hash cannot be null or empty.");
         }
         this.passwordHash = passwordHash;
@@ -163,6 +151,10 @@ public class User {
         this.accessLevel = accessLevel;
     }
 
+    public Integer getCreatedBy() {
+        return createdBy;
+    }
+
     public void setCreatedBy(Integer createdBy) {
         this.createdBy = createdBy;
     }
@@ -172,6 +164,10 @@ public class User {
             throw new InvalidDateException("CreatedAt cannot be null.");
         }
         this.createdAt = createdAt;
+    }
+
+    public Integer getUpdatedBy() {
+        return updatedBy;
     }
 
     public void setUpdatedBy(Integer updatedBy) {

@@ -17,20 +17,34 @@ public class UserRepositoryJpaAdapter implements UserRepository {
         this.userRepositoryJpa = userRepositoryJpa;
     }
 
+    @Override
     public Optional<User> findById(UUID id){
         return userRepositoryJpa.findById(id);
     }
 
+    @Override
     public void deleteById(UUID id){
         userRepositoryJpa.deleteById(id);
     }
 
+    @Override
     public User save(User user){
         return userRepositoryJpa.save(user);
     }
 
+    @Override
+    public Optional<User> findByUserName (String username){
+        return userRepositoryJpa.findByUsername(username);
+    }
 
+    @Override
+    public Optional<User> findByEmail (String email){
+        return userRepositoryJpa.findByEmail(email);
+    }
 
-
+    @Override
+    public Optional<User> findByPhoneNumber (String phoneNumber){
+        return userRepositoryJpa.findByPhoneNumber(phoneNumber);
+    }
 
 }
