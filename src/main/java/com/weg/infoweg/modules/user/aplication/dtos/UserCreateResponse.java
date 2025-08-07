@@ -9,8 +9,4 @@ public record UserCreateResponse(UUID id,
                                 String username,
                                 String email,
                                 String phoneNumber,
-                                AccessLevel accessLevel,
-                                int createdBy,
-                                LocalDateTime createdAt,
-                                int updateBy,
-                                LocalDateTime updatedAt) { }
+                                AccessLevel accessLevel){ }
