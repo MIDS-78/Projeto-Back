@@ -1,4 +1,4 @@
-package com.weg.infoweg.modules.user.exceptions;
+package com.weg.infoweg.modules.user.domain.exceptions;
 
 public class InvalidPasswordException extends RuntimeException {
     public InvalidPasswordException(String message) {
