@@ -1,7 +1,7 @@
 package com.weg.infoweg.modules.user.domain;
 
 import com.weg.infoweg.modules.user.domain.enums.AccessLevel;
-import com.weg.infoweg.modules.user.exceptions.*;
+import com.weg.infoweg.modules.user.domain.exceptions.*;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 

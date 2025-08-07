@@ -1,4 +1,4 @@
-package com.weg.infoweg.modules.user.exceptions;
+package com.weg.infoweg.modules.user.domain.exceptions;
 
 public class InvalidEmailException extends DomainException {
     public InvalidEmailException(String email) {

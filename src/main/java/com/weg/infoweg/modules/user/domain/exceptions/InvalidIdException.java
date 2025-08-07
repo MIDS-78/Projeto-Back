@@ -1,4 +1,4 @@
-package com.weg.infoweg.modules.user.exceptions;
+package com.weg.infoweg.modules.user.domain.exceptions;
 
 public class InvalidIdException extends RuntimeException {
     public InvalidIdException(String message) {

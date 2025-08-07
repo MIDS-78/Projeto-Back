@@ -1,4 +1,6 @@
 package com.weg.infoweg.modules.user.aplication.dtos;
 
-public record UserUpdateResponse() {
+import java.util.UUID;
+
+public record UserUpdateResponse(UUID id, String name, String eimal) {
 }
