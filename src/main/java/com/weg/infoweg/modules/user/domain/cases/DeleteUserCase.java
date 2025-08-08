@@ -8,9 +8,10 @@ import com.weg.infoweg.modules.user.aplication.dtos.UserDeleteResponse;
 import com.weg.infoweg.modules.user.domain.User;
 import com.weg.infoweg.modules.user.domain.ports.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-@Service
+@Component
 public class DeleteUserCase {
 
     @Autowired

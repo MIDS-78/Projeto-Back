@@ -3,7 +3,10 @@ package com.weg.infoweg.modules.user.domain;
 import com.weg.infoweg.modules.user.domain.enums.AccessLevel;
 import com.weg.infoweg.modules.user.domain.exceptions.*;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -35,7 +38,7 @@ public class User {
     private AccessLevel accessLevel;
 
     @Column(name = "created_by")
-    private Integer createdBy;
+    private UUID createdBy;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -44,9 +47,10 @@ public class User {
     private Integer updatedBy;
 
     @Column(name = "updated_at", nullable = false)
+    @UpdateTimestamp
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    public User(UUID id, String username, String email, String passwordHash, String phoneNumber, AccessLevel accessLevel, Integer createdBy, LocalDateTime createdAt, Integer updatedBy, LocalDateTime updatedAt) {
+    public User(UUID id, String username, String email, String passwordHash, String phoneNumber, AccessLevel accessLevel, UUID createdBy, LocalDateTime createdAt, Integer updatedBy, LocalDateTime updatedAt) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -57,6 +61,19 @@ public class User {
         this.createdAt = createdAt;
         this.updatedBy = updatedBy;
         this.updatedAt = updatedAt;
+    }
+
+    public User() {
+
+    }
+
+    public User(@NotNull(message = "Username is required") String username, @NotNull(message = "Email is required") String email, @NotNull(message = "Password is required") @Size(min=8, message = "Password must be at least 8 characters") String password, @NotNull(message = "Phone number is required") String s, AccessLevel accessLevel) {
+        this.id = null;
+        this.username = username;
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.phoneNumber = phoneNumber;
+        this.accessLevel = accessLevel;
     }
 
     public UUID getId() {
@@ -151,11 +168,11 @@ public class User {
         this.accessLevel = accessLevel;
     }
 
-    public Integer getCreatedBy() {
+    public UUID getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(Integer createdBy) {
+    public void setCreatedBy(UUID createdBy) {
         this.createdBy = createdBy;
     }
 
