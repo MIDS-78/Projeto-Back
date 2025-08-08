@@ -6,6 +6,7 @@ import com.weg.infoweg.modules.auth.aplication.dtos.register.UserRegisterRespons
 import com.weg.infoweg.modules.auth.domain.exceptions.EmailInvalidException;
 import com.weg.infoweg.modules.auth.domain.exceptions.UsernameInvalidException;
 import com.weg.infoweg.modules.auth.domain.ports.PasswordEncoderCrypto;
+import com.weg.infoweg.modules.auth.domain.ports.PasswordValidator;
 import com.weg.infoweg.modules.user.domain.User;
 import com.weg.infoweg.modules.user.domain.ports.UserRepository;
 import org.springframework.stereotype.Component;
@@ -19,14 +20,19 @@ public class RegisterUserCase {
 
     private final UserRegisterMapper userRegisterMapper;
 
-    public RegisterUserCase(UserRepository repository, PasswordEncoderCrypto encoder, UserRegisterMapper userRegisterMapper) {
+    private final PasswordValidator passwordValidator;
+
+    public RegisterUserCase(UserRepository repository, PasswordEncoderCrypto encoder, UserRegisterMapper userRegisterMapper, PasswordValidator passwordValidator) {
         this.repository = repository;
         this.encoder = encoder;
         this.userRegisterMapper = userRegisterMapper;
+        this.passwordValidator = passwordValidator;
     }
 
     public UserRegisterResponse execute(UserRegisterRequest userRegister) {
         validateRegistrationData(userRegister);
+
+        passwordValidator.isValid(userRegister.password());
 
         User user = userRegisterMapper.toEntity(userRegister);
         user.setPasswordHash(encoder.encryptPassword(user.getPasswordHash()));

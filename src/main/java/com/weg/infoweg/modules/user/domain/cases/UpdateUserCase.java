@@ -6,10 +6,12 @@ import com.weg.infoweg.modules.user.domain.User;
 import com.weg.infoweg.modules.user.domain.exceptions.UserNotFoundException;
 import com.weg.infoweg.modules.user.domain.ports.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@Component
 public class UpdateUserCase {
 
     private final UserRepository userRepository;

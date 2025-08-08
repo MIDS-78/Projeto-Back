@@ -1,4 +1,4 @@
-package com.weg.infoweg.infrastructure.security;
+package com.weg.infoweg.infrastructure.security.password;
 
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
