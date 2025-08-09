@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
 
         String message = ve.getMessage();
 
-        return ResponseEntity.badRequest().body(new ResponseApiDto<>("error", message, "VALIDATION_ERROR", null, LocalDateTime.now()));
+        return ResponseEntity.badRequest().body(new ResponseApiDto<>("error", message, "VALIDATION_ERROR", LocalDateTime.now()));
     }
 
 
@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResponseApiDto<Void>> handlerExceptionsDomain(DomainException de){
         String message = de.getMessage();
 
-        return ResponseEntity.badRequest().body(new ResponseApiDto<>("error", message, "DOMAIN_ERROR", null, LocalDateTime.now()));
+        return ResponseEntity.badRequest().body(new ResponseApiDto<>("error", message, "DOMAIN_ERROR", LocalDateTime.now()));
     }
 
 
