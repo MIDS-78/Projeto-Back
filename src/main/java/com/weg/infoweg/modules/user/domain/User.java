@@ -3,6 +3,7 @@ package com.weg.infoweg.modules.user.domain;
 import com.weg.infoweg.modules.user.domain.enums.AccessLevel;
 import com.weg.infoweg.modules.user.domain.exceptions.*;
 import jakarta.persistence.*;
+import com.weg.infoweg.modules.user.domain.valueobjects.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.GenericGenerator;
@@ -25,7 +26,7 @@ public class User {
     private String username;
 
     @Column(nullable = false, unique = true, length = 100)
-    private String email;
+    private Email email;
 
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
@@ -50,7 +51,7 @@ public class User {
     @UpdateTimestamp
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    public User(UUID id, String username, String email, String passwordHash, String phoneNumber, AccessLevel accessLevel, UUID createdBy, LocalDateTime createdAt, Integer updatedBy, LocalDateTime updatedAt) {
+    public User(UUID id, String username, Email email, String passwordHash, String phoneNumber, AccessLevel accessLevel, UUID createdBy, LocalDateTime createdAt, Integer updatedBy, LocalDateTime updatedAt) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -67,7 +68,7 @@ public class User {
 
     }
 
-    public User(@NotNull(message = "Username is required") String username, @NotNull(message = "Email is required") String email, @NotNull(message = "Password is required") @Size(min=8, message = "Password must be at least 8 characters") String password, @NotNull(message = "Phone number is required") String s, AccessLevel accessLevel) {
+    public User(@NotNull(message = "Username is required") String username, @NotNull(message = "Email is required") Email email, @NotNull(message = "Password is required") @Size(min=8, message = "Password must be at least 8 characters") String password, @NotNull(message = "Phone number is required") String s, AccessLevel accessLevel) {
         this.id = null;
         this.username = username;
         this.email = email;
@@ -84,7 +85,7 @@ public class User {
         return username;
     }
 
-    public String getEmail() {
+    public Email getEmail() {
         return email;
     }
 
@@ -128,17 +129,11 @@ public class User {
         this.username = username.trim();
     }
 
-    public void setEmail(String email) {
-        if (email == null || email.trim().isEmpty()) {
+    public void setEmail(Email email) {
+        if (email == null) {
             throw new InvalidEmailException("Email cannot be null or empty.");
         }
-
-        String trimmed = email.trim().toLowerCase();
-        if (!trimmed.matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
-            throw new InvalidEmailException("Invalid format: " + trimmed);
-        }
-
-        this.email = trimmed;
+        this.email = email;
     }
 
     public void setPasswordHash(String passwordHash) {
