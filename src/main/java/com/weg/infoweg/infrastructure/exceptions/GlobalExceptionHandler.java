@@ -5,11 +5,12 @@ import com.weg.infoweg.modules.user.domain.exceptions.DomainException;
 import jakarta.validation.ValidationException;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.LocalDateTime;
 
-@Configuration
+@ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ValidationException.class)
