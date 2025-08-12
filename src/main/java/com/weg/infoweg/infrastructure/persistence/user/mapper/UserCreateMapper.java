@@ -5,7 +5,9 @@ import com.weg.infoweg.modules.user.aplication.dtos.UserCreateRequest;
 import com.weg.infoweg.modules.user.aplication.dtos.UserCreateResponse;
 import com.weg.infoweg.modules.user.domain.User;
 import com.weg.infoweg.modules.user.domain.valueobjects.Email;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserCreateMapper {
 
     public User toEntity(UserCreateRequest userCreateRequest, String hashedPassword) {
