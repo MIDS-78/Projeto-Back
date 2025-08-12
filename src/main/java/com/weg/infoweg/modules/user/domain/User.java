@@ -1,5 +1,6 @@
 package com.weg.infoweg.modules.user.domain;
 
+import com.weg.infoweg.infrastructure.persistence.user.converter.EmailConverter;
 import com.weg.infoweg.modules.user.domain.enums.AccessLevel;
 import com.weg.infoweg.modules.user.domain.exceptions.*;
 import jakarta.persistence.*;
@@ -26,6 +27,7 @@ public class User {
     private String username;
 
     @Column(nullable = false, unique = true, length = 100)
+    @Convert(converter = EmailConverter.class)
     private Email email;
 
     @Column(name = "password_hash", nullable = false)
@@ -45,13 +47,13 @@ public class User {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "updated_by")
-    private Integer updatedBy;
+    private UUID updatedBy;
 
     @Column(name = "updated_at", nullable = false)
     @UpdateTimestamp
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    public User(UUID id, String username, Email email, String passwordHash, String phoneNumber, AccessLevel accessLevel, UUID createdBy, LocalDateTime createdAt, Integer updatedBy, LocalDateTime updatedAt) {
+    public User(UUID id, String username, Email email, String passwordHash, String phoneNumber, AccessLevel accessLevel, UUID createdBy, LocalDateTime createdAt, UUID updatedBy, LocalDateTime updatedAt) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -68,11 +70,11 @@ public class User {
 
     }
 
-    public User(@NotNull(message = "Username is required") String username, @NotNull(message = "Email is required") Email email, @NotNull(message = "Password is required") @Size(min=8, message = "Password must be at least 8 characters") String password, @NotNull(message = "Phone number is required") String s, AccessLevel accessLevel) {
+    public User(@NotNull(message = "Username is required") String username, @NotNull(message = "Email is required") Email email, @NotNull(message = "Password is required") @Size(min=8, message = "Password must be at least 8 characters") String password, @NotNull(message = "Phone number is required") String phoneNumber, AccessLevel accessLevel) {
         this.id = null;
         this.username = username;
         this.email = email;
-        this.passwordHash = passwordHash;
+        this.passwordHash = password;
         this.phoneNumber = phoneNumber;
         this.accessLevel = accessLevel;
     }
