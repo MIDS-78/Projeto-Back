@@ -180,11 +180,11 @@ public class User {
         this.createdAt = createdAt;
     }
 
-    public Integer getUpdatedBy() {
+    public UUID getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(Integer updatedBy) {
+    public void setUpdatedBy(UUID updatedBy) {
         this.updatedBy = updatedBy;
     }
 
