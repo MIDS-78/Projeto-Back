@@ -1,5 +1,6 @@
 package com.weg.infoweg.modules.user.domain.cases;
 
+import com.weg.infoweg.infrastructure.persistence.user.mapper.UserUpdateMapper;
 import com.weg.infoweg.modules.user.aplication.dtos.UserUpdateRequest;
 import com.weg.infoweg.modules.user.aplication.dtos.UserUpdateResponse;
 import com.weg.infoweg.modules.user.domain.User;
@@ -16,26 +17,20 @@ public class UpdateUserCase {
 
     private final UserRepository userRepository;
 
-    public UpdateUserCase(UserRepository userRepository) {
+    private final UserUpdateMapper userUpdateMapper;
+
+    public UpdateUserCase(UserRepository userRepository, UserUpdateMapper userUpdateMapper) {
         this.userRepository = userRepository;
+        this.userUpdateMapper = userUpdateMapper;
     }
 
 
     @Transactional
     public void execute(UserUpdateRequest request) {
 
-        Optional<User> existingUserOpt = userRepository.findById(request.id());
-        if (existingUserOpt.isEmpty()) {
-            throw new UserNotFoundException("User with ID " + request.id() + " not found.");
-        }
+        User existingUser = userRepository.findById(request.id()).orElseThrow(() -> new UserNotFoundException("User with ID " + request.id() + " not found."));
 
-        User existingUser = existingUserOpt.get();
-
-        existingUser.setUsername(request.name());
-        existingUser.setEmail(request.email());
-
-        existingUser.setUpdatedAt(LocalDateTime.now());
-        existingUser.setUpdatedBy(1);
+        userUpdateMapper.toEntity(request , existingUser);
 
         userRepository.save(existingUser);
     }
