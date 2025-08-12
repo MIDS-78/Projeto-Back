@@ -9,17 +9,13 @@ import java.time.LocalDateTime;
 
 public class UserUpdateMapper {
 
-    public User toEntity(UserUpdateRequest userUpdateRequest, User user){
+    public void toEntity(UserUpdateRequest userUpdateRequest, User user){
         final Email email = new Email(userUpdateRequest.email(), EmailValidatorUtil.toInstanceValidatorWeg());
 
         user.setUsername(userUpdateRequest.name());
         user.setEmail(email);
         user.setUpdatedAt(LocalDateTime.now());
         user.setUpdatedBy(1);
-    }
-
-    public User toResponse(User user){
-
     }
 
 }
