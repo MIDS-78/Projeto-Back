@@ -37,7 +37,7 @@ public class CreateUserCase implements UseCase<UserCreateRequest, UserCreateResp
         return new UserCreateResponse(
                 savedUser.getId(),
                 savedUser.getUsername(),
-                savedUser.getEmail(),
+                savedUser.getEmail().toString(),
                 savedUser.getPhoneNumber(),
                 savedUser.getAccessLevel()
         );
