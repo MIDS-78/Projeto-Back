@@ -79,6 +79,9 @@ public class User {
         this.accessLevel = accessLevel;
     }
 
+    public User(UUID uuid, String testuser, String password123) {
+    }
+
     public UUID getId() {
         return id;
     }
