@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class UpdateUserCase {
@@ -26,12 +27,14 @@ public class UpdateUserCase {
 
 
     @Transactional
-    public void execute(UserUpdateRequest request) {
+    public UserUpdateResponse execute(UserUpdateRequest request, UUID id) {
 
-        User existingUser = userRepository.findById(request.id()).orElseThrow(() -> new UserNotFoundException("User with ID " + request.id() + " not found."));
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User with ID " + id + " not found."));
 
         userUpdateMapper.toEntity(request , existingUser);
 
         userRepository.save(existingUser);
+
+        return userUpdateMapper.toResponse(existingUser);
     }
 }
