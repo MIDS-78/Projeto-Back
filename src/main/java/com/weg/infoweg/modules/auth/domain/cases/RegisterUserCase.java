@@ -9,6 +9,7 @@ import com.weg.infoweg.modules.auth.domain.ports.PasswordEncoderCrypto;
 import com.weg.infoweg.modules.auth.domain.ports.PasswordValidator;
 import com.weg.infoweg.modules.user.domain.User;
 import com.weg.infoweg.modules.user.domain.ports.UserRepository;
+import com.weg.infoweg.modules.user.domain.valueobjects.Email;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -50,7 +51,8 @@ public class RegisterUserCase {
 
 
     private void checkIfEmailIsUnique(UserRegisterRequest userRegister) {
-        if (repository.findByEmail(userRegister.email()).isPresent()) {
+        Email email = new Email(userRegister.email());
+        if (repository.findByEmail(email).isPresent()) {
             throw new EmailInvalidException("Email is already in use");
         }
     }

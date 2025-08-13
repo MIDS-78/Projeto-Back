@@ -5,6 +5,7 @@ import com.weg.infoweg.modules.user.aplication.dtos.UserCreateRequest;
 import com.weg.infoweg.modules.user.aplication.dtos.UserCreateResponse;
 import com.weg.infoweg.modules.user.domain.User;
 import com.weg.infoweg.modules.user.domain.ports.UserRepository;
+import com.weg.infoweg.modules.user.domain.valueobjects.Email;
 import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,7 @@ class CreateUserCaseTest {
         User userEntity = new User();
         when(userCreateMapper.toEntity(req, "hash")).thenReturn(userEntity);
         when(userRepository.findByUserName("john")).thenReturn(Optional.empty());
-        when(userRepository.findByEmail("john@weg.com")).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(new Email("john@weg.com"))).thenReturn(Optional.empty());
         when(userRepository.findByPhoneNumber("47999999999")).thenReturn(Optional.empty());
         when(userRepository.save(userEntity)).thenReturn(userEntity);
         UserCreateResponse expectedResponse = new UserCreateResponse(UUID.randomUUID(), "john", "john@weg.com", "47999999999", null);

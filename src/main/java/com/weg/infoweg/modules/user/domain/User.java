@@ -19,21 +19,21 @@ import java.util.UUID;
 public class User {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @Column(updatable = false, nullable = false)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id")
     private UUID id;
 
-    @Column(nullable = false, unique = true, length = 60)
+    @Column(name = "username")
     private String username;
 
-    @Column(nullable = false, unique = true, length = 100)
     @Convert(converter = EmailConverter.class)
+    @Column(name = "email")
     private Email email;
 
-    @Column(name = "password_hash", nullable = false)
+    @Column(name = "password_hash")
     private String passwordHash;
 
-    @Column(name = "phone_number", nullable = false, length = 40)
+    @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
@@ -70,16 +70,17 @@ public class User {
 
     }
 
-    public User(@NotNull(message = "Username is required") String username, @NotNull(message = "Email is required") Email email, @NotNull(message = "Password is required") @Size(min=8, message = "Password must be at least 8 characters") String password, @NotNull(message = "Phone number is required") String phoneNumber, AccessLevel accessLevel) {
+    public User(String username, Email email, String password, String phoneNumber, AccessLevel accessLevel) {
         this.id = null;
         this.username = username;
         this.email = email;
         this.passwordHash = password;
         this.phoneNumber = phoneNumber;
         this.accessLevel = accessLevel;
-    }
-
-    public User(UUID uuid, String testuser, String password123) {
+        this.updatedBy = null;
+        this.createdAt = null;
+        this.updatedAt = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
     }
 
     public UUID getId() {

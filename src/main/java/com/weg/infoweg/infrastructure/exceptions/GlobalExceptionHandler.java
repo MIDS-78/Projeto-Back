@@ -5,6 +5,7 @@ import com.weg.infoweg.modules.user.domain.exceptions.DomainException;
 import jakarta.validation.ValidationException;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -27,6 +28,12 @@ public class GlobalExceptionHandler {
         String message = de.getMessage();
 
         return ResponseEntity.badRequest().body(new ResponseApiDto<>("error", message, "DOMAIN_ERROR", LocalDateTime.now()));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ResponseApiDto<Void>> handlerExceptionMethod(MethodArgumentNotValidException ma){
+        String message = ma.getMessage();
+        return ResponseEntity.badRequest().body(new ResponseApiDto<Void>("error", message, "METHOD_ERROR", LocalDateTime.now()));
     }
 
 

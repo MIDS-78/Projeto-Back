@@ -1,7 +1,9 @@
 package com.weg.infoweg.infrastructure.security.user;
 
 import com.weg.infoweg.modules.user.domain.User;
+import com.weg.infoweg.modules.user.domain.enums.AccessLevel;
 import com.weg.infoweg.modules.user.domain.ports.UserRepository;
+import com.weg.infoweg.modules.user.domain.valueobjects.Email;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,7 +38,7 @@ public class UserDetailsServiceImplTest {
     void setUp() {
 
         // Inicializa o objeto de usuário antes de cada teste
-        user = new User(UUID.randomUUID(), "testuser", "password123");
+        user = new User("testuser", new Email("jaafadsa@weg.net"), "password123", "3423424234234", AccessLevel.STUDENT);
     }
 
     @Test

@@ -3,6 +3,7 @@ package com.weg.infoweg.infrastructure.persistence.user;
 
 import com.weg.infoweg.modules.user.domain.User;
 import com.weg.infoweg.modules.user.domain.ports.UserRepository;
+import com.weg.infoweg.modules.user.domain.valueobjects.Email;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -38,7 +39,7 @@ public class UserRepositoryJpaAdapter implements UserRepository {
     }
 
     @Override
-    public Optional<User> findByEmail (String email){
+    public Optional<User> findByEmail (Email email){
         return userRepositoryJpa.findByEmail(email);
     }
 

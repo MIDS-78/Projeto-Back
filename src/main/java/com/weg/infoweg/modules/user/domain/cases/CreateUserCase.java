@@ -5,6 +5,7 @@ import com.weg.infoweg.modules.user.aplication.dtos.UserCreateRequest;
 import com.weg.infoweg.modules.user.aplication.dtos.UserCreateResponse;
 import com.weg.infoweg.modules.user.domain.User;
 import com.weg.infoweg.modules.user.domain.ports.UserRepository;
+import com.weg.infoweg.modules.user.domain.valueobjects.Email;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,9 +32,10 @@ public class CreateUserCase {
         String hashedPassword = passwordEncoder.encode(userCreateRequest.password());
 
         User user = userCreateMapper.toEntity(userCreateRequest, hashedPassword);
+        Email email = new Email(userCreateRequest.email());
 
         if(userRepository.findByUserName(userCreateRequest.username()).isPresent() ||
-            userRepository.findByEmail(userCreateRequest.email()).isPresent() ||
+            userRepository.findByEmail(email).isPresent() ||
             userRepository.findByPhoneNumber(userCreateRequest.phoneNumber()).isPresent()) {
 
             throw new ValidationException(
