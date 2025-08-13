@@ -5,7 +5,9 @@ import com.weg.infoweg.modules.user.aplication.dtos.UserGetResponse;
 import com.weg.infoweg.modules.user.domain.User;
 import com.weg.infoweg.modules.user.domain.exceptions.UserNotFoundException;
 import com.weg.infoweg.modules.user.domain.ports.UserRepository;
+import org.springframework.stereotype.Component;
 
+@Component
 public class GetUserCase {
 
     private final UserRepository userRepository;
