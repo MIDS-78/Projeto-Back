@@ -1,5 +1,6 @@
 package com.weg.infoweg.modules.user.aplication.controller;
 
+import com.weg.infoweg.core.UserAuthenticationService;
 import com.weg.infoweg.infrastructure.api.dto.ResponseApiDto;
 import com.weg.infoweg.modules.user.aplication.dtos.*;
 import com.weg.infoweg.modules.user.aplication.port.UserService;
@@ -17,10 +18,11 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+    private final UserAuthenticationService userAuthenticationService;
 
-
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserAuthenticationService userAuthenticationService) {
         this.userService = userService;
+        this.userAuthenticationService = userAuthenticationService;
     }
 
     @GetMapping()
@@ -32,6 +34,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<UserCreateResponse> createUser(
             @Valid @RequestBody UserCreateRequest request) {
+        UUID id = userAuthenticationService.getIdUserAuthentication();
         UserCreateResponse response = userService.createUser(request, id);
         return ResponseEntity.ok(response);
     }
