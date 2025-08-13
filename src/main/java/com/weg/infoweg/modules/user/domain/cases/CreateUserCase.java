@@ -11,6 +11,8 @@ import jakarta.validation.ValidationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class CreateUserCase implements UseCase<UserCreateRequest, UserCreateResponse> {
 
@@ -24,9 +26,8 @@ public class CreateUserCase implements UseCase<UserCreateRequest, UserCreateResp
         this.userCreateMapper = userCreateMapper;
     }
 
-    @Override
     @Transactional
-    public UserCreateResponse execute(UserCreateRequest userCreateRequest) {
+    public UserCreateResponse execute(UserCreateRequest userCreateRequest, UUID id) {
 
         String hashedPassword = passwordEncoder.encode(userCreateRequest.password());
 
