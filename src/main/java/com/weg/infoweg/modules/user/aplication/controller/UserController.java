@@ -1,11 +1,15 @@
 package com.weg.infoweg.modules.user.aplication.controller;
 
+import com.weg.infoweg.infrastructure.api.dto.ResponseApiDto;
 import com.weg.infoweg.modules.user.aplication.dtos.*;
 import com.weg.infoweg.modules.user.aplication.port.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/user")
@@ -34,14 +38,14 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UserUpdateResponse> updateUser(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @Valid @RequestBody UserUpdateRequest request) {
-        UserUpdateResponse response = userService.updateUser(request);
-        return ResponseEntity.ok(response);
+        UserUpdateResponse userUpdateResponse = userService.updateUser(request, id);
+        return ResponseEntity.ok(new ResponseApiDto<UserUpdateResponse>("200", "User updated with success", userUpdateResponse, LocalDateTime.now()));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<UserDeleteResponse> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<UserDeleteResponse> deleteUser(@PathVariable UUID id) {
         UserDeleteRequest request = new UserDeleteRequest();
         UserDeleteResponse response = userService.deleteUser(request);
         return ResponseEntity.ok(response);

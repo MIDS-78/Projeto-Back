@@ -11,7 +11,7 @@ public interface UserService {
 
     UserDeleteResponse deleteUser(UserDeleteRequest userDeleteRequest, UUID id);
 
-    void updateUser(UserUpdateRequest userUpdateRequest, UUID id);
+    UserUpdateResponse updateUser(UserUpdateRequest userUpdateRequest, UUID id);
 
     UserGetResponse getUser(UserGetRequest userGetRequest, UUID id);
 
