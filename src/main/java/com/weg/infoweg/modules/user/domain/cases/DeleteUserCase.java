@@ -18,12 +18,11 @@ public class DeleteUserCase {
         this.userRepository = userRepository;
     }
 
-    public UserDeleteResponse execute(UserDeleteRequest userDeleteRequest){
+    public void execute(UserDeleteRequest userDeleteRequest){
         User user = this.userRepository.findById(userDeleteRequest.id())
         .orElseThrow(() -> new RuntimeException("User not founded"));
 
         this.userRepository.deleteById(userDeleteRequest.id());
 
-        return new UserDeleteResponse(user);
     }
 }

@@ -10,4 +10,8 @@ public record ResponseApiDto<T>(String status, String message, String errorCode,
     public ResponseApiDto(String status, String message, String errorCode, LocalDateTime timestamp) {
         this(status, message, errorCode, null, timestamp);
     }
+
+    public ResponseApiDto(String status, String message, LocalDateTime now) {
+        this(status, message, null,null, now);
+    }
 }

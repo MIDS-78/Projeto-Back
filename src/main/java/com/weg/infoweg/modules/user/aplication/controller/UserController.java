@@ -49,9 +49,9 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseApiDto<UserDeleteResponse>> deleteUser(@PathVariable UserDeleteRequest userDeleteRequest) {
-        UserDeleteResponse response = userService.deleteUser(userDeleteRequest);
-        return ResponseEntity.ok(new ResponseApiDto<UserDeleteResponse>("200", "User deleted with success", response, LocalDateTime.now()));
+    public ResponseEntity<ResponseApiDto<Void>> deleteUser(@PathVariable UserDeleteRequest userDeleteRequest) {
+        userService.deleteUser(userDeleteRequest);
+        return ResponseEntity.ok(new ResponseApiDto<Void>("200", "User deleted with success", LocalDateTime.now()));
     }
 }
 

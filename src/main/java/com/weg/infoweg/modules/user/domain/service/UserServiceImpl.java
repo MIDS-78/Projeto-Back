@@ -32,8 +32,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDeleteResponse deleteUser(UserDeleteRequest userDeleteRequest) {
-        return deleteUserCase.execute(userDeleteRequest);
+    public void deleteUser(UserDeleteRequest userDeleteRequest) {
+        deleteUserCase.execute(userDeleteRequest);
     }
 
     @Override
