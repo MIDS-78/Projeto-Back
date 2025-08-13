@@ -1,4 +1,4 @@
-package com.weg.infoweg.infrastructure.api.dto.services;
+package com.weg.infoweg.infrastructure.api.service;
 
 import com.weg.infoweg.core.UserAuthenticationService;
 import org.springframework.security.core.userdetails.UserDetails;

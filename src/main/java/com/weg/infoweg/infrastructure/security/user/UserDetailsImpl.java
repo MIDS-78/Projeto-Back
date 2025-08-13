@@ -15,6 +15,13 @@ public class UserDetailsImpl implements UserDetails {
     private String password;
     private String username;
 
+    public UserDetailsImpl(UUID id, AccessLevel accessLevel, String password, String username) {
+        this.id = id;
+        this.accessLevel = accessLevel;
+        this.password = password;
+        this.username = username;
+    }
+
     public UUID getId(){
         return id;
     }
