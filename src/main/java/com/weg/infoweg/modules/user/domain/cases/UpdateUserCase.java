@@ -27,12 +27,14 @@ public class UpdateUserCase {
 
 
     @Transactional
-    public void execute(UserUpdateRequest request, UUID id) {
+    public UserUpdateResponse execute(UserUpdateRequest request, UUID id) {
 
         User existingUser = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User with ID " + id + " not found."));
 
         userUpdateMapper.toEntity(request , existingUser);
 
         userRepository.save(existingUser);
+
+        return userUpdateMapper.toResponse(existingUser);
     }
 }

@@ -1,6 +1,5 @@
 package com.weg.infoweg.modules.user.domain.cases;
 
-import com.weg.infoweg.core.abstractions.UseCase;
 import com.weg.infoweg.infrastructure.persistence.user.mapper.UserCreateMapper;
 import com.weg.infoweg.modules.user.aplication.dtos.UserCreateRequest;
 import com.weg.infoweg.modules.user.aplication.dtos.UserCreateResponse;
@@ -14,7 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class CreateUserCase implements UseCase<UserCreateRequest, UserCreateResponse> {
+public class CreateUserCase {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;

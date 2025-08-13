@@ -1,6 +1,5 @@
 package com.weg.infoweg.modules.auth.domain.cases;
 
-import com.weg.infoweg.core.abstractions.UseCase;
 import com.weg.infoweg.infrastructure.provider.JwtTokenProvider;
 import com.weg.infoweg.modules.auth.aplication.dtos.JwtTokenDto;
 import com.weg.infoweg.modules.auth.aplication.dtos.login.UserLoginRequest;

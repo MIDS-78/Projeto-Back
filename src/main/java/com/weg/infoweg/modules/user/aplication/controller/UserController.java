@@ -24,31 +24,31 @@ public class UserController {
     }
 
     @GetMapping()
-    public ResponseEntity<UserGetResponse> getUser(@PathVariable UserGetRequest userGetRequest) {
-        userService.getUser(userGetRequest);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ResponseApiDto<UserGetResponse>> getUser(@PathVariable UserGetRequest userGetRequest) {
+        UserGetResponse userGetResponse = userService.getUser(userGetRequest);
+        return ResponseEntity.ok(new ResponseApiDto<UserGetResponse>("200", "User get with success", userGetResponse, LocalDateTime.now()));
     }
 
     @PostMapping
     public ResponseEntity<UserCreateResponse> createUser(
             @Valid @RequestBody UserCreateRequest request) {
-        UserCreateResponse response = userService.createUser(request);
+        UserCreateResponse response = userService.createUser(request, id);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserUpdateResponse> updateUser(
+    public ResponseEntity<ResponseApiDto<UserUpdateResponse>> updateUser(
             @PathVariable UUID id,
             @Valid @RequestBody UserUpdateRequest request) {
+
         UserUpdateResponse userUpdateResponse = userService.updateUser(request, id);
         return ResponseEntity.ok(new ResponseApiDto<UserUpdateResponse>("200", "User updated with success", userUpdateResponse, LocalDateTime.now()));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<UserDeleteResponse> deleteUser(@PathVariable UUID id) {
-        UserDeleteRequest request = new UserDeleteRequest();
-        UserDeleteResponse response = userService.deleteUser(request);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ResponseApiDto<UserDeleteResponse>> deleteUser(@PathVariable UserDeleteRequest userDeleteRequest) {
+        UserDeleteResponse response = userService.deleteUser(userDeleteRequest);
+        return ResponseEntity.ok(new ResponseApiDto<UserDeleteResponse>("200", "User deleted with success", response, LocalDateTime.now()));
     }
 }
 

@@ -9,10 +9,10 @@ public interface UserService {
 
     UserCreateResponse createUser(UserCreateRequest userCreateRequest, UUID id);
 
-    UserDeleteResponse deleteUser(UserDeleteRequest userDeleteRequest, UUID id);
+    UserDeleteResponse deleteUser(UserDeleteRequest userDeleteRequest);
 
     UserUpdateResponse updateUser(UserUpdateRequest userUpdateRequest, UUID id);
 
-    UserGetResponse getUser(UserGetRequest userGetRequest, UUID id);
+    UserGetResponse getUser(UserGetRequest userGetRequest);
 
 }

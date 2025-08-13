@@ -4,6 +4,7 @@ import com.weg.infoweg.modules.user.aplication.dtos.*;
 import com.weg.infoweg.modules.user.aplication.port.UserService;
 import com.weg.infoweg.modules.user.domain.cases.CreateUserCase;
 import com.weg.infoweg.modules.user.domain.cases.DeleteUserCase;
+import com.weg.infoweg.modules.user.domain.cases.GetUserCase;
 import com.weg.infoweg.modules.user.domain.cases.UpdateUserCase;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +16,13 @@ public class UserServiceImpl implements UserService {
     private final CreateUserCase createUserCase;
     private final UpdateUserCase updateUserCase;
     private final DeleteUserCase deleteUserCase;
+    private final GetUserCase getUserCase;
 
-    public UserServiceImpl(CreateUserCase createUserCase, UpdateUserCase updateUserCase, DeleteUserCase deleteUserCase) {
+    public UserServiceImpl(CreateUserCase createUserCase, UpdateUserCase updateUserCase, DeleteUserCase deleteUserCase, GetUserCase getUserCase) {
         this.createUserCase = createUserCase;
         this.updateUserCase = updateUserCase;
         this.deleteUserCase = deleteUserCase;
+        this.getUserCase = getUserCase;
     }
 
 
@@ -29,17 +32,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDeleteResponse deleteUser(UserDeleteRequest userDeleteRequest,  UUID id) {
-        return deleteUserCase.execute(userDeleteRequest, id);
+    public UserDeleteResponse deleteUser(UserDeleteRequest userDeleteRequest) {
+        return deleteUserCase.execute(userDeleteRequest);
     }
 
     @Override
-    public void updateUser(UserUpdateRequest userUpdateRequest,  UUID id) {
-        updateUserCase.execute(userUpdateRequest, id);
+    public UserUpdateResponse updateUser(UserUpdateRequest userUpdateRequest,  UUID id) {
+        return updateUserCase.execute(userUpdateRequest, id);
     }
 
     @Override
-    public UserGetResponse getUser(UserGetRequest userGetRequest, UUID id) {
-        return null;
+    public UserGetResponse getUser(UserGetRequest userGetRequest) {
+        return getUserCase.execute(userGetRequest);
     }
 }
