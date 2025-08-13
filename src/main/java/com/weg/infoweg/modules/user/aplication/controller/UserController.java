@@ -14,13 +14,14 @@ public class UserController {
 
     private final UserService userService;
 
+
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping()
     public ResponseEntity<UserGetResponse> getUser(@PathVariable UserGetRequest userGetRequest) {
-        UserGetResponse response = userService.getUser(userGetRequest);
+        userService.getUser(userGetRequest);
         return ResponseEntity.ok(response);
     }
 

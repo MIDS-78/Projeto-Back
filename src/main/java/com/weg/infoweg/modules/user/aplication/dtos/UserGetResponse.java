@@ -1,4 +1,8 @@
 package com.weg.infoweg.modules.user.aplication.dtos;
 
-public record UserGetResponse() {
+import com.weg.infoweg.modules.user.domain.enums.AccessLevel;
+
+import java.util.UUID;
+
+public record UserGetResponse(UUID id, String nome, String email, String phoneNumber, AccessLevel accessLevel) {
 }
