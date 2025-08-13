@@ -1,5 +1,7 @@
 package com.weg.infoweg.infrastructure.security;
 
+import com.weg.infoweg.infrastructure.security.user.UserDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,6 +15,9 @@ import org.springframework.http.HttpMethod;
 
 @Configuration
 public class SecurityConfig {
+
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
