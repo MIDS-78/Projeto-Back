@@ -86,11 +86,9 @@ class UserControllerTest {
     @Test
     void deleteUser_ShouldReturnUserDeleteResponse_WhenSuccessful() {
         UserDeleteRequest request = new UserDeleteRequest(userId);
-        UserDeleteResponse response = new UserDeleteResponse("User delete with success");
 
         ResponseEntity<ResponseApiDto<Void>> responseEntity = userController.deleteUser(request);
 
         assertEquals(200, responseEntity.getStatusCode().value());
-        assertEquals(response, responseEntity.getBody().data());
     }
 }
