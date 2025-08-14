@@ -1,4 +1,4 @@
-package com.weg.infoweg.infrastructure.security;
+package com.weg.infoweg.infrastructure.security.filter;
 
 import com.weg.infoweg.infrastructure.provider.JwtTokenProvider;
 import com.weg.infoweg.infrastructure.security.user.UserDetailsServiceImpl;
@@ -19,6 +19,7 @@ import java.io.IOException;
 
 @Component
 public class JwtTokenFilter extends OncePerRequestFilter{
+
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 

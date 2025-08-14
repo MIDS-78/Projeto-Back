@@ -1,5 +1,6 @@
 package com.weg.infoweg.infrastructure.security;
 
+import com.weg.infoweg.infrastructure.security.filter.JwtTokenFilter;
 import com.weg.infoweg.infrastructure.security.user.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
