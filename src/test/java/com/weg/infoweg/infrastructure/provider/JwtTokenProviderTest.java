@@ -1,8 +1,7 @@
-package com.weg.infoweg.infrastructure;
+package com.weg.infoweg.infrastructure.provider;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.weg.infoweg.infrastructure.provider.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
