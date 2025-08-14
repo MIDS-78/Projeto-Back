@@ -36,6 +36,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(new ResponseApiDto<Void>("error", message, "METHOD_ERROR", LocalDateTime.now()));
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ResponseApiDto<Void>> handlerException(Exception e){
+        String message = e.getMessage();
+        return ResponseEntity.badRequest().body(new ResponseApiDto<Void>("error", message, "EXCEPTION_ERROR", LocalDateTime.now()));
+    }
+
 
 
 }

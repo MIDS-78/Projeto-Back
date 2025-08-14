@@ -45,7 +45,7 @@ class UserControllerTest {
         when(userService.getUser(any(UserGetRequest.class))).thenReturn(response);
 
         // Act
-        ResponseEntity<ResponseApiDto<UserGetResponse>> responseEntity = userController.getUser(request);
+        ResponseEntity<ResponseApiDto<UserGetResponse>> responseEntity = userController.getUser(request.id());
 
         // Assert
         assertEquals(200, responseEntity.getStatusCode().value());
@@ -87,7 +87,7 @@ class UserControllerTest {
     void deleteUser_ShouldReturnUserDeleteResponse_WhenSuccessful() {
         UserDeleteRequest request = new UserDeleteRequest(userId);
 
-        ResponseEntity<ResponseApiDto<Void>> responseEntity = userController.deleteUser(request);
+        ResponseEntity<ResponseApiDto<Void>> responseEntity = userController.deleteUser(request.id());
 
         assertEquals(200, responseEntity.getStatusCode().value());
     }
