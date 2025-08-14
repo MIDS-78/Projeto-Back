@@ -43,7 +43,7 @@ class GetUserCaseTest {
 
         UserGetResponse response = getUserCase.execute(request);
 
-        assertEquals("john", response.email());
+        assertEquals("john", response.name());
         assertEquals("john@weg.com", response.email());
     }
 

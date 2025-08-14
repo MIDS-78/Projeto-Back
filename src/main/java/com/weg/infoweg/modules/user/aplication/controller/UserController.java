@@ -25,9 +25,9 @@ public class UserController {
         this.userAuthenticationService = userAuthenticationService;
     }
 
-    @GetMapping()
-    public ResponseEntity<ResponseApiDto<UserGetResponse>> getUser(@PathVariable UserGetRequest userGetRequest) {
-        UserGetResponse userGetResponse = userService.getUser(userGetRequest);
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseApiDto<UserGetResponse>> getUser(@PathVariable UUID id) {
+        UserGetResponse userGetResponse = userService.getUser(new UserGetRequest(id));
         return ResponseEntity.ok(new ResponseApiDto<UserGetResponse>("200", "User get with success", userGetResponse, LocalDateTime.now()));
     }
 
@@ -49,8 +49,8 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseApiDto<Void>> deleteUser(@PathVariable UserDeleteRequest userDeleteRequest) {
-        userService.deleteUser(userDeleteRequest);
+    public ResponseEntity<ResponseApiDto<Void>> deleteUser(@PathVariable UUID id) {
+        userService.deleteUser(new UserDeleteRequest(id));
         return ResponseEntity.ok(new ResponseApiDto<Void>("200", "User deleted with success", LocalDateTime.now()));
     }
 }

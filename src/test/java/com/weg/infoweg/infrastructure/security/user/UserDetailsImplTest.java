@@ -27,6 +27,8 @@ public class UserDetailsImplTest {
         assertEquals(id, userDetails.getId());
         assertEquals(username, userDetails.getUsername());
         assertEquals(password, userDetails.getPassword());
-        assertTrue(userDetails.getAuthorities().isEmpty());
+        assertEquals(1, userDetails.getAuthorities().size());
+        assertTrue(userDetails.getAuthorities().contains(AccessLevel.ADMINISTRATOR));
+
     }
 }
