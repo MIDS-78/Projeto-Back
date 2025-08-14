@@ -1,16 +1,25 @@
-FROM ubuntu:latest AS build
+# Etapa de build
+FROM maven:3.9.4-eclipse-temurin-21 AS build
 
-RUN apt-get update
-RUN apt-get install openjdk-21-jdk -y
-COPY . .
+WORKDIR /app
 
-RUN apt-get install maven -y
-RUN mvn clean install
+# Copia arquivos do projeto
+COPY pom.xml .
+COPY src ./src
 
-FROM openjdk:21-jdk-slim
+# Compila e empacota o projeto (gera o JAR)
+RUN mvn clean package -DskipTests
 
+# Etapa de runtime
+FROM eclipse-temurin:21-jdk-slim
+
+WORKDIR /app
+
+# Expõe a porta da aplicação
 EXPOSE 8080
 
-COPY --from=build /target/deploy_render-1.0.0.jar app.jar
+# Copia o JAR gerado na etapa de build
+COPY --from=build /app/target/deploy_render-1.0.0.jar app.jar
 
+# Comando para rodar a aplicação
 ENTRYPOINT ["java","-jar","app.jar"]
