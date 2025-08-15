@@ -1,25 +1,16 @@
-# Etapa de build
-FROM maven:3.9.4-eclipse-temurin-21 AS build
+FROM ubuntu:latest AS build
 
-WORKDIR /app
+RUN apt-get update
+RUN apt-get install openjdk-21-jdk -y
+COPY . .
 
-# Copia arquivos do projeto
-COPY pom.xml .
-COPY src ./src
+RUN apt-get install maven -y
+RUN mvn clean install
 
-# Compila e empacota o projeto (gera o JAR)
-RUN mvn clean package -DskipTests
+FROM openjdk:21-jdk-slim
 
-# Etapa de runtime
-FROM eclipse-temurin:21-jdk-slim
-
-WORKDIR /app
-
-# Expõe a porta da aplicação
 EXPOSE 8080
 
-# Copia o JAR gerado na etapa de build
-COPY --from=build /app/target/deploy_render-1.0.0.jar app.jar
+COPY --from=build /target/backend-0.0.1-SNAPSHOT.jar app.jar
 
-# Comando para rodar a aplicação
-ENTRYPOINT ["java","-jar","app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
