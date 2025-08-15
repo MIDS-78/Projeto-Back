@@ -1,6 +1,6 @@
 package com.weg.infoweg.modules.auth.domain.service;
 
-import com.weg.infoweg.modules.auth.aplication.dtos.JwtTokenDto;
+import com.weg.infoweg.modules.token.application.dtos.JwtTokenDto;
 import com.weg.infoweg.modules.auth.aplication.dtos.login.UserLoginRequest;
 import com.weg.infoweg.modules.auth.aplication.dtos.login.UserLoginResponse;
 import com.weg.infoweg.modules.auth.aplication.dtos.register.UserRegisterRequest;
