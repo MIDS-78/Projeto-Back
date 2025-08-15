@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: projeto-back
+    name: InfoWeg-Backend
     env: java
     plan: free
     buildCommand: chmod +x mvnw && ./mvnw clean package -DskipTests
@@ -8,4 +8,4 @@ services:
     branch: dev
     envVars:
       - key: JAVA_VERSION
-        value: 24
+        value: 21
