@@ -11,7 +11,7 @@ import java.util.UUID;
 public class Token {
 
     @Id
-    @GeneratedValue(generator = "UUID")
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(updatable = false, nullable = false)
     private UUID id;
 
@@ -50,8 +50,8 @@ public class Token {
     }
 
     public Token() {
-
     }
+
 
     public UUID getId() {
         return id;

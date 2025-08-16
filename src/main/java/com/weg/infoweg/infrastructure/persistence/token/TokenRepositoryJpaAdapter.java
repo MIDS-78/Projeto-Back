@@ -47,4 +47,9 @@ public class TokenRepositoryJpaAdapter implements TokenRepository {
     public Token refreshTokenByTokenString(String tokenString) {
         return tokenRepositoryJpa.refreshTokenByTokenString(tokenString);
     }
+
+    @Override
+    public List<Token> findAllValidTokenByUser(UUID userId) {
+        return List.of();
+    }
 }
