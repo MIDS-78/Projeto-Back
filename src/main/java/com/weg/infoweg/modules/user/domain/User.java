@@ -83,6 +83,19 @@ public class User {
         this.createdAt = LocalDateTime.now();
     }
 
+    public User(UUID id , String username, Email email, String password, String phoneNumber, AccessLevel accessLevel) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.passwordHash = password;
+        this.phoneNumber = phoneNumber;
+        this.accessLevel = accessLevel;
+        this.updatedBy = null;
+        this.createdAt = null;
+        this.updatedAt = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
+    }
+
     public UUID getId() {
         return id;
     }
