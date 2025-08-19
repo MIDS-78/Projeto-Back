@@ -19,4 +19,6 @@ public interface TokenRepository {
     Token save(Token token);
 
     Token refreshTokenByTokenString(String tokenString);
+
+    void saveAll(List<Token> activeTokens);
 }

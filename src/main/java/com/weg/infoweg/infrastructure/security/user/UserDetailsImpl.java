@@ -1,6 +1,7 @@
 package com.weg.infoweg.infrastructure.security.user;
 
 import com.weg.infoweg.modules.user.domain.enums.AccessLevel;
+import com.weg.infoweg.modules.user.domain.valueobjects.Email;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -13,13 +14,13 @@ public class UserDetailsImpl implements UserDetails {
     private UUID id;
     private AccessLevel accessLevel;
     private String password;
-    private String username;
+    private String email;
 
-    public UserDetailsImpl(UUID id, AccessLevel accessLevel, String password, String username) {
+    public UserDetailsImpl(UUID id, AccessLevel accessLevel, String password, Email email) {
         this.id = id;
         this.accessLevel = accessLevel;
         this.password = password;
-        this.username = username;
+        this.email = email;
     }
 
     public UUID getId(){

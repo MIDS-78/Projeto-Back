@@ -52,6 +52,9 @@ public class Token {
     public Token() {
     }
 
+    public Token(String accessToken, TokenType tokenType, User user) {
+    }
+
 
     public UUID getId() {
         return id;
