@@ -45,7 +45,8 @@ public class TokenServiceImpl implements TokenService {
                 user.getId(),
                 user.getAccessLevel(),
                 user.getPasswordHash(),
-                user.getEmail()
+                user.getEmail().getAddress(),
+                user.getUsername()
         );
 
         String accessToken = jwtTokenProvider.generateToken(userDetails);
@@ -105,7 +106,8 @@ public class TokenServiceImpl implements TokenService {
                 user.getId(),
                 user.getAccessLevel(),
                 user.getPasswordHash(),
-                user.getEmail()
+                user.getEmail().getAddress(),
+                user.getUsername()
         );
 
         String accessToken = jwtTokenProvider.generateToken(userDetails);
@@ -156,7 +158,8 @@ public class TokenServiceImpl implements TokenService {
                 user.getId(),
                 user.getAccessLevel(),
                 user.getPasswordHash(),
-                user.getEmail()
+                user.getEmail().getAddress(),
+                user.getUsername()
         );
 
         String newAccessToken = jwtTokenProvider.generateToken(userDetails);

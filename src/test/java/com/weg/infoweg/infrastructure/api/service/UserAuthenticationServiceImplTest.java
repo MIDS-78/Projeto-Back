@@ -24,7 +24,7 @@ public class UserAuthenticationServiceImplTest {
         // Crie um UserDetails personalizado para o teste
         UUID uuid = UUID.randomUUID();
         UserDetailsImpl userDetails = new UserDetailsImpl(
-                uuid, AccessLevel.STUDENT, "password","testuser"
+                uuid, AccessLevel.STUDENT, "password","testuser@weg.net", "testuser"
         );
 
         // Simule o objeto de autenticação

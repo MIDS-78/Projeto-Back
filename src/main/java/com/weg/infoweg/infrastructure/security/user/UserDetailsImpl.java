@@ -15,12 +15,14 @@ public class UserDetailsImpl implements UserDetails {
     private AccessLevel accessLevel;
     private String password;
     private String email;
+    private String name;
 
-    public UserDetailsImpl(UUID id, AccessLevel accessLevel, String password, Email email) {
+    public UserDetailsImpl(UUID id, AccessLevel accessLevel, String password, String email, String name) {
         this.id = id;
         this.accessLevel = accessLevel;
         this.password = password;
         this.email = email;
+        this.name = name;
     }
 
     public UUID getId(){
@@ -39,6 +41,6 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return name;
     }
 }

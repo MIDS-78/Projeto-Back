@@ -1,6 +1,7 @@
 package com.weg.infoweg.infrastructure.exceptions;
 
 import com.weg.infoweg.infrastructure.api.dto.ResponseApiDto;
+import com.weg.infoweg.modules.token.domain.exceptions.TokenException;
 import com.weg.infoweg.modules.user.domain.exceptions.DomainException;
 import jakarta.validation.ValidationException;
 import org.springframework.context.annotation.Configuration;
@@ -40,6 +41,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResponseApiDto<Void>> handlerException(Exception e){
         String message = e.getMessage();
         return ResponseEntity.badRequest().body(new ResponseApiDto<Void>("error", message, "EXCEPTION_ERROR", LocalDateTime.now()));
+    }
+
+    @ExceptionHandler(TokenException.class)
+    public ResponseEntity<ResponseApiDto<Void>> handlerTokenException(TokenException tokenException){
+        String message = tokenException.getMessage();
+        return ResponseEntity.badRequest().body(new ResponseApiDto<Void>("error", message, "TOKEN_ERROR", LocalDateTime.now()));
     }
 
 

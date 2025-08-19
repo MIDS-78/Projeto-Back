@@ -1,6 +1,7 @@
 package com.weg.infoweg.infrastructure.persistence.token;
 
 import com.weg.infoweg.modules.token.domain.Token;
+import com.weg.infoweg.modules.token.domain.exceptions.TokenException;
 import com.weg.infoweg.modules.token.domain.ports.TokenRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
@@ -45,11 +46,14 @@ public class TokenRepositoryJpaAdapter implements TokenRepository {
 
     @Override
     public Token refreshTokenByTokenString(String tokenString) {
-        return tokenRepositoryJpa.refreshTokenByTokenString(tokenString);
+        return tokenRepositoryJpa.findByToken(tokenString).orElseThrow(() -> new TokenException("Token not found"));
     }
 
     @Override
-    public List<Token> findAllValidTokenByUser(UUID userId) {
-        return List.of();
+    public void saveAll(List<Token> activeTokens) {
+        tokenRepositoryJpa.saveAll(activeTokens);
     }
+
+
+
 }

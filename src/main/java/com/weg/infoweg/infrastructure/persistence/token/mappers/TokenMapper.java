@@ -8,6 +8,6 @@ import com.weg.infoweg.modules.user.domain.User;
 public class TokenMapper {
 
     public Token toEntity(JwtTokenDto jwtTokenDto, User user, TokenType tokenType){
-        return new Token(jwtTokenDto.token(), user, tokenType);
+        return new Token(jwtTokenDto.token(), tokenType, user);
     }
 }
