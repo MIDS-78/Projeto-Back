@@ -10,6 +10,8 @@ import com.weg.infoweg.modules.auth.domain.cases.LoginUserCase;
 import com.weg.infoweg.modules.auth.domain.cases.RegisterUserCase;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -31,5 +33,15 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserRegisterResponse register(UserRegisterRequest userRegisterRequest) {
         return registerUserCase.execute(userRegisterRequest);
+    }
+
+    @Override
+    public void logout(UUID id, JwtTokenDto jwtTokenDto) {
+
+    }
+
+    @Override
+    public JwtTokenDto reflesh(UUID id, JwtTokenDto jwtTokenDto) {
+        return null;
     }
 }
