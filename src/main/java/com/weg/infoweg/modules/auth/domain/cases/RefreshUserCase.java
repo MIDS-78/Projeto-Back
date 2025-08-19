@@ -3,9 +3,11 @@ package com.weg.infoweg.modules.auth.domain.cases;
 import com.weg.infoweg.modules.token.application.dtos.JwtTokenDto;
 import com.weg.infoweg.modules.token.application.port.TokenService;
 import com.weg.infoweg.modules.token.domain.exceptions.TokenInvalidException;
+import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+@Component
 public class RefreshUserCase {
 
     private final TokenService tokenService;

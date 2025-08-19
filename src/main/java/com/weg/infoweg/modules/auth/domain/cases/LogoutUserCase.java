@@ -5,9 +5,11 @@ import com.weg.infoweg.modules.token.application.port.TokenService;
 import com.weg.infoweg.modules.user.domain.User;
 import com.weg.infoweg.modules.user.domain.exceptions.UserNotFoundException;
 import com.weg.infoweg.modules.user.domain.ports.UserRepository;
+import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+@Component
 public class LogoutUserCase {
 
     private final TokenService tokenService;
