@@ -1,5 +1,7 @@
 package com.weg.infoweg.modules.auth.domain.service;
 
+import com.weg.infoweg.modules.auth.domain.cases.LogoutUserCase;
+import com.weg.infoweg.modules.auth.domain.cases.RefleshUserCase;
 import com.weg.infoweg.modules.token.application.dtos.JwtTokenDto;
 import com.weg.infoweg.modules.auth.aplication.dtos.login.UserLoginRequest;
 import com.weg.infoweg.modules.auth.aplication.dtos.login.UserLoginResponse;
@@ -19,6 +21,10 @@ public class AuthServiceImpl implements AuthService {
 
     private final RegisterUserCase registerUserCase;
 
+    private LogoutUserCase logoutUserCase;
+
+    private RefleshUserCase refleshUserCase;
+
     public AuthServiceImpl(LoginUserCase loginUserCase, RegisterUserCase registerUserCase) {
         this.loginUserCase = loginUserCase;
         this.registerUserCase = registerUserCase;
@@ -37,11 +43,11 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void logout(UUID id, JwtTokenDto jwtTokenDto) {
-
+        logoutUserCase.execute(id, jwtTokenDto);
     }
 
     @Override
     public JwtTokenDto reflesh(UUID id, JwtTokenDto jwtTokenDto) {
-        return null;
+        return refleshUserCase.execute(id, jwtTokenDto);
     }
 }
