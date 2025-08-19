@@ -40,14 +40,14 @@ public class AuthController {
         return ResponseEntity.ok(new ResponseApiDto<UserRegisterResponse>("success", "User registered successfully", userRegisterResponse, LocalDateTime.now()));
     }
 
-    @GetMapping("/logout")
+    @PostMapping("/logout")
     public ResponseEntity<ResponseApiDto<Void>> logout(@RequestBody JwtTokenDto jwtTokenDto){
         UUID id = userAuthenticationService.getIdUserAuthentication();
         authService.logout(id, jwtTokenDto);
         return ResponseEntity.ok(new ResponseApiDto<Void>("success", "User logged out successfully", LocalDateTime.now()));
     }
 
-    @GetMapping("/reflesh")
+    @PostMapping("/reflesh")
     public ResponseEntity<ResponseApiDto<JwtTokenDto>> reflesh(@RequestBody JwtTokenDto jwtTokenDto){
         UUID id = userAuthenticationService.getIdUserAuthentication();
         JwtTokenDto newToken = authService.reflesh(id, jwtTokenDto);
