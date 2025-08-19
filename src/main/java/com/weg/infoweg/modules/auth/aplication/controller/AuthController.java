@@ -7,6 +7,7 @@ import com.weg.infoweg.modules.auth.aplication.dtos.login.UserLoginResponse;
 import com.weg.infoweg.modules.auth.aplication.dtos.register.UserRegisterRequest;
 import com.weg.infoweg.modules.auth.aplication.dtos.register.UserRegisterResponse;
 import com.weg.infoweg.modules.auth.aplication.port.AuthService;
+import com.weg.infoweg.modules.token.application.dtos.JwtTokenDto;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +23,9 @@ public class AuthController {
 
     private final UserAuthenticationService userAuthenticationService;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, UserAuthenticationService userAuthenticationService) {
         this.authService = authService;
+        this.userAuthenticationService = userAuthenticationService;
     }
 
     @PostMapping("/login")
@@ -39,8 +41,17 @@ public class AuthController {
     }
 
     @GetMapping("/logout")
-    public ResponseEntity<ResponseApiDto<Void>> logout(){
+    public ResponseEntity<ResponseApiDto<Void>> logout(@RequestBody JwtTokenDto jwtTokenDto){
         UUID id = userAuthenticationService.getIdUserAuthentication();
+        authService.logout(id, jwtTokenDto);
+        return ResponseEntity.ok(new ResponseApiDto<Void>("success", "User logged out successfully", LocalDateTime.now()));
+    }
+
+    @GetMapping("/reflesh")
+    public ResponseEntity<ResponseApiDto<JwtTokenDto>> reflesh(@RequestBody JwtTokenDto jwtTokenDto){
+        UUID id = userAuthenticationService.getIdUserAuthentication();
+        JwtTokenDto newToken = authService.reflesh(id, jwtTokenDto);
+        return ResponseEntity.ok(new ResponseApiDto<JwtTokenDto>("success", "User reflesh successfully", newToken, LocalDateTime.now()));
     }
 
 

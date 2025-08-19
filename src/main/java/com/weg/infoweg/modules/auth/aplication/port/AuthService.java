@@ -5,6 +5,9 @@ import com.weg.infoweg.modules.auth.aplication.dtos.login.UserLoginRequest;
 import com.weg.infoweg.modules.auth.aplication.dtos.login.UserLoginResponse;
 import com.weg.infoweg.modules.auth.aplication.dtos.register.UserRegisterRequest;
 import com.weg.infoweg.modules.auth.aplication.dtos.register.UserRegisterResponse;
+import com.weg.infoweg.modules.token.application.dtos.JwtTokenDto;
+
+import java.util.UUID;
 
 public interface AuthService {
 
@@ -12,4 +15,7 @@ public interface AuthService {
 
     UserRegisterResponse register(UserRegisterRequest userRegisterRequest);
 
+    void logout(UUID id, JwtTokenDto jwtTokenDto);
+
+    JwtTokenDto reflesh(UUID id, JwtTokenDto jwtTokenDto);
 }
