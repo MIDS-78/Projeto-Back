@@ -31,6 +31,18 @@ public class JwtTokenProvider {
                 .sign(algorithm);
     }
 
+    public String generateRefreshToken(UserDetails userDetails) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
+        Algorithm algorithm = Algorithm.HMAC256(jwtSecret);
+
+        return JWT.create()
+                .withSubject(userDetails.getUsername())
+                .withIssuedAt(now)
+                .withExpiresAt(expiryDate)
+                .sign(algorithm);
+    }
+
     public String getUsernameFromJWT(String token){
         Algorithm algorithm = Algorithm.HMAC256(jwtSecret);
         JWTVerifier verifier = JWT.require(algorithm).build();

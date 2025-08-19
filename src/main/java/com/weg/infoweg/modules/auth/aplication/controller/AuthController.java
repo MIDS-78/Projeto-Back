@@ -1,5 +1,6 @@
 package com.weg.infoweg.modules.auth.aplication.controller;
 
+import com.weg.infoweg.core.UserAuthenticationService;
 import com.weg.infoweg.infrastructure.api.dto.ResponseApiDto;
 import com.weg.infoweg.modules.auth.aplication.dtos.login.UserLoginRequest;
 import com.weg.infoweg.modules.auth.aplication.dtos.login.UserLoginResponse;
@@ -11,12 +12,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthService authService;
+
+    private final UserAuthenticationService userAuthenticationService;
 
     public AuthController(AuthService authService) {
         this.authService = authService;
@@ -33,5 +37,11 @@ public class AuthController {
         UserRegisterResponse userRegisterResponse = authService.register(userRegisterRequest);
         return ResponseEntity.ok(new ResponseApiDto<UserRegisterResponse>("success", "User registered successfully", userRegisterResponse, LocalDateTime.now()));
     }
+
+    @GetMapping("/logout")
+    public ResponseEntity<ResponseApiDto<Void>> logout(){
+        UUID id = userAuthenticationService.getIdUserAuthentication();
+    }
+
 
 }
