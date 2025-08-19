@@ -6,12 +6,12 @@ import com.weg.infoweg.modules.token.domain.exceptions.TokenInvalidException;
 
 import java.util.UUID;
 
-public class RefleshUserCase {
+public class RefreshUserCase {
 
     private final TokenService tokenService;
 
     // Injeção de dependência via construtor
-    public RefleshUserCase(TokenService tokenService) {
+    public RefreshUserCase(TokenService tokenService) {
         this.tokenService = tokenService;
     }
 

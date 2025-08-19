@@ -47,10 +47,10 @@ public class AuthController {
         return ResponseEntity.ok(new ResponseApiDto<Void>("success", "User logged out successfully", LocalDateTime.now()));
     }
 
-    @PostMapping("/reflesh")
+    @PostMapping("/refresh")
     public ResponseEntity<ResponseApiDto<JwtTokenDto>> reflesh(@RequestBody JwtTokenDto jwtTokenDto){
         UUID id = userAuthenticationService.getIdUserAuthentication();
-        JwtTokenDto newToken = authService.reflesh(id, jwtTokenDto);
+        JwtTokenDto newToken = authService.refresh(id, jwtTokenDto);
         return ResponseEntity.ok(new ResponseApiDto<JwtTokenDto>("success", "User reflesh successfully", newToken, LocalDateTime.now()));
     }
 

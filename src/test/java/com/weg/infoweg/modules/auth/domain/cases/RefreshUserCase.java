@@ -12,15 +12,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-class RefleshUserCaseTest {
+class RefreshUserCaseTest {
 
     private TokenService tokenService;
-    private RefleshUserCase refleshUserCase;
+    private RefreshUserCase refleshUserCase;
 
     @BeforeEach
     void setUp() {
         tokenService = mock(TokenService.class);
-        refleshUserCase = new RefleshUserCase(tokenService);
+        refleshUserCase = new RefreshUserCase(tokenService);
     }
 
     @Test
