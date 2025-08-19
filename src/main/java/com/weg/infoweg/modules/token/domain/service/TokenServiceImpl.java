@@ -100,15 +100,8 @@ public class TokenServiceImpl implements TokenService {
     // 1. Usar 'jwtTokenProvider.generateToken' para criar o token.
     // 2. Retornar o DTO do token gerado.
     @Override
-    public JwtTokenDto generateToken(User user) {
+    public JwtTokenDto generateToken(UserDetailsImpl userDetails) {
 
-        UserDetailsImpl userDetails = new UserDetailsImpl(
-                user.getId(),
-                user.getAccessLevel(),
-                user.getPasswordHash(),
-                user.getEmail().getAddress(),
-                user.getUsername()
-        );
 
         String accessToken = jwtTokenProvider.generateToken(userDetails);
         return new JwtTokenDto(accessToken);

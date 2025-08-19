@@ -113,7 +113,9 @@ class TokenServiceImplTest {
         when(jwtTokenProvider.generateToken(any(UserDetailsImpl.class))).thenReturn("newAccessToken");
 
         // Execute the method to be tested
-        JwtTokenDto tokenDto = tokenService.generateToken(testUser);
+
+        UserDetailsImpl userDetails = new UserDetailsImpl(testUser.getId(), testUser.getAccessLevel(), testUser.getPasswordHash(), testUser.getEmail().getAddress(), testUser.getUsername() );
+        JwtTokenDto tokenDto = tokenService.generateToken(userDetails);
 
         // Verify the returned token
         assertNotNull(tokenDto);
