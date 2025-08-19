@@ -12,6 +12,7 @@ public class UserDetailsImplTest {
     @Test
     void testUserDetailsData() {
         UUID id = UUID.randomUUID();
+        String email = "testuser@weg.net";
         String username = "testuser";
         String password = "testpassword";
 
@@ -20,6 +21,7 @@ public class UserDetailsImplTest {
                 id,
                 AccessLevel.ADMINISTRATOR,
                 password,
+                email,
                 username
         );
 
