@@ -2,7 +2,6 @@ package com.weg.infoweg.infrastructure.security;
 
 import com.weg.infoweg.infrastructure.security.filter.JwtTokenFilter;
 import com.weg.infoweg.infrastructure.security.user.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,25 +21,26 @@ import org.springframework.web.cors.CorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
+    private final JwtTokenFilter jwtTokenFilter;
 
-    @Autowired
-    private JwtTokenFilter jwtTokenFilter;
-
-    @Autowired
-    private CorsConfigurationSource corsConfigurationSource ;
+    public SecurityConfig(UserDetailsServiceImpl userDetailsService, JwtTokenFilter jwtTokenFilter) {
+        this.userDetailsService = userDetailsService;
+        this.jwtTokenFilter = jwtTokenFilter;
+    }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
 
-        return http.cors(cors -> cors.configurationSource(corsConfigurationSource))
+        return http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> {
 
                     auth.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll();
                     auth.requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll();
+                    auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll(); // permitir preflight
 
                     auth.requestMatchers("/api/auth/logout").authenticated();
                     auth.requestMatchers("/api/auth/refresh").authenticated();
