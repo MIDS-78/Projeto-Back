@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.UUID;
@@ -55,18 +56,34 @@ class UserControllerTest {
     @Test
     void createUser_ShouldReturnUserCreateResponse_WhenSuccessful() {
         // Arrange
-        UserCreateRequest request = new UserCreateRequest("testuser", "test@example.com", "password123", "123456789", AccessLevel.STUDENT);
-        UserCreateResponse response = new UserCreateResponse(userId, "testuser", "test@example.com", "123456789", AccessLevel.STUDENT  );
+        UserCreateRequest request = new UserCreateRequest(
+                "testuser",
+                "test@example.com",
+                "password123",
+                "123456789",
+                AccessLevel.STUDENT
+        );
+
+        UserCreateResponse userResponse = new UserCreateResponse(
+                userId,
+                "testuser",
+                "test@example.com",
+                "123456789",
+                AccessLevel.STUDENT
+        );
+
         when(userAuthenticationService.getIdUserAuthentication()).thenReturn(userId);
-        when(userService.createUser(any(UserCreateRequest.class), any(UUID.class))).thenReturn(response);
+        when(userService.createUser(any(UserCreateRequest.class), any(UUID.class)))
+                .thenReturn(userResponse);
 
         // Act
         ResponseEntity<ResponseApiDto<UserCreateResponse>> responseEntity = userController.createUser(request);
 
         // Assert
-        assertEquals(200, responseEntity.getStatusCode().value());
-        assertEquals(response, responseEntity.getBody());
+        assertEquals(HttpStatus.CREATED.value(), responseEntity.getStatusCode().value());
+        assertEquals("testuser", responseEntity.getBody().data().username());
     }
+
 
     @Test
     void updateUser_ShouldReturnUserUpdateResponse_WhenSuccessful() {

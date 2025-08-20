@@ -28,8 +28,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -83,7 +81,7 @@ class AuthControllerTest {
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(jsonPath("$.status").value("success"))
                     .andExpect(jsonPath("$.message").value("Login completed successfully"))
-                    .andExpect(jsonPath("$.data.jwtTokenDto.token").value(TEST_TOKEN)); // <- objeto aninhado
+                    .andExpect(jsonPath("$.data.jwtTokenDto.token").value(TEST_TOKEN)); // objeto aninhado
         }
 
         @Test
@@ -143,8 +141,8 @@ class AuthControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(jsonPath("$.status").value("success"))
-                    .andExpect(jsonPath("$.message").value("User refresh successfully"))
-                    .andExpect(jsonPath("$.data.token").value("new_token_value")); // <- direto, não aninhado
+                    .andExpect(jsonPath("$.message").value("User refreshed successfully"))
+                    .andExpect(jsonPath("$.data.token").value("new_token_value")); // direto, não aninhado
         }
 
         @Test
@@ -166,7 +164,7 @@ class AuthControllerTest {
             assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertThat(response.getBody()).isNotNull();
             assertThat(response.getBody().status()).isEqualTo("success");
-            assertThat(response.getBody().message()).isEqualTo("User refresh successfully");
+            assertThat(response.getBody().message()).isEqualTo("User refreshed successfully");
             assertThat(response.getBody().data()).isEqualTo(newTokenDto);
             assertThat(response.getBody().localStamp()).isNotNull();
         }
