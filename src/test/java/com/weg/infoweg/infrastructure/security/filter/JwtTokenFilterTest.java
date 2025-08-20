@@ -3,6 +3,7 @@ package com.weg.infoweg.infrastructure.security.filter;
 import com.weg.infoweg.infrastructure.provider.JwtTokenProvider;
 import com.weg.infoweg.infrastructure.security.user.UserDetailsServiceImpl;
 import com.weg.infoweg.infrastructure.security.filter.JwtTokenFilter;
+import com.weg.infoweg.modules.token.application.port.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,6 +34,9 @@ class JwtTokenFilterTest {
     @Mock
     private UserDetailsServiceImpl userDetailsService;
 
+    @Mock
+    private TokenService tokenService; // <-- adicionado
+
     @InjectMocks
     private JwtTokenFilter jwtTokenFilter;
 
@@ -52,7 +56,6 @@ class JwtTokenFilterTest {
 
     @Test
     void shouldSetAuthenticationOnValidToken() throws Exception {
-        // Cenário de um token válido
         String token = "valid-jwt-token";
         String username = "testuser";
         UserDetails userDetails = new User(username, "password", new ArrayList<>());
@@ -61,17 +64,16 @@ class JwtTokenFilterTest {
         when(jwtTokenProvider.valideToken(token)).thenReturn(true);
         when(jwtTokenProvider.getUsernameFromJWT(token)).thenReturn(username);
         when(userDetailsService.loadUserByUsername(username)).thenReturn(userDetails);
+        when(tokenService.checkValidToken(any())).thenReturn(true); // <-- muito importante
 
         jwtTokenFilter.doFilterInternal(request, response, filterChain);
 
-        // Verificação
         assertNotNull(SecurityContextHolder.getContext().getAuthentication());
         verify(filterChain, times(1)).doFilter(request, response);
     }
 
     @Test
     void shouldNotSetAuthenticationOnInvalidToken() throws Exception {
-        // Cenário de um token inválido
         String token = "invalid-jwt-token";
 
         when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
@@ -79,19 +81,16 @@ class JwtTokenFilterTest {
 
         jwtTokenFilter.doFilterInternal(request, response, filterChain);
 
-        // Verificação
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         verify(filterChain, times(1)).doFilter(request, response);
     }
 
     @Test
     void shouldNotSetAuthenticationWhenTokenIsMissing() throws Exception {
-        // Cenário de ausência de token
         when(request.getHeader("Authorization")).thenReturn(null);
 
         jwtTokenFilter.doFilterInternal(request, response, filterChain);
 
-        // Verificação
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         verify(filterChain, times(1)).doFilter(request, response);
     }
