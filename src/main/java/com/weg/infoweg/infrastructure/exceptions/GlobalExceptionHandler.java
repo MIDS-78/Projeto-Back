@@ -8,6 +8,7 @@ import jakarta.validation.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -79,6 +80,12 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest()
                 .body(ResponseApiDto.error(message, "INVALID_FORMAT_ERROR"));
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ResponseApiDto<Void>> handleAuthenticationService(BadCredentialsException badCredentialsException){
+        String message = badCredentialsException.getMessage();
+        return ResponseEntity.badRequest().body(ResponseApiDto.error(message, "INVALID_CREDENTIALS"));
     }
 
 
