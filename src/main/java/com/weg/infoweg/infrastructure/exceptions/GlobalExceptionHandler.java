@@ -1,11 +1,13 @@
 package com.weg.infoweg.infrastructure.exceptions;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.weg.infoweg.infrastructure.api.dto.ResponseApiDto;
 import com.weg.infoweg.modules.token.domain.exceptions.TokenException;
 import com.weg.infoweg.modules.user.domain.exceptions.DomainException;
 import jakarta.validation.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -55,4 +57,29 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ResponseApiDto.error("An unexpected error occurred", "INTERNAL_SERVER_ERROR"));
     }
+
+    @ExceptionHandler({HttpMessageNotReadableException.class, InvalidFormatException.class})
+    public ResponseEntity<ResponseApiDto<Void>> handleJsonExceptions(Exception ex) {
+        String message;
+        if (ex.getCause() instanceof InvalidFormatException) {
+            InvalidFormatException ife = (InvalidFormatException) ex.getCause();
+            // Verifica se a exceção é para o enum AccessLevel
+            if (ife.getTargetType().isEnum()) {
+                message = String.format(
+                        "Invalid value for enum %s. Valid values are: %s",
+                        ife.getTargetType().getSimpleName(),
+                        java.util.Arrays.toString(ife.getTargetType().getEnumConstants())
+                );
+            } else {
+                message = "Invalid JSON format or field type.";
+            }
+        } else {
+            message = "Invalid JSON format in the request body.";
+        }
+
+        return ResponseEntity.badRequest()
+                .body(ResponseApiDto.error(message, "INVALID_FORMAT_ERROR"));
+    }
+
+
 }
