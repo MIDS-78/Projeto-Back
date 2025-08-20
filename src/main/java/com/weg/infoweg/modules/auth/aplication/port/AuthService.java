@@ -17,5 +17,5 @@ public interface AuthService {
 
     void logout(UUID id, JwtTokenDto jwtTokenDto);
 
-    JwtTokenDto reflesh(UUID id, JwtTokenDto jwtTokenDto);
+    JwtTokenDto refresh(UUID id, JwtTokenDto jwtTokenDto);
 }

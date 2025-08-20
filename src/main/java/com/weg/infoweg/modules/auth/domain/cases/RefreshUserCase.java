@@ -3,15 +3,17 @@ package com.weg.infoweg.modules.auth.domain.cases;
 import com.weg.infoweg.modules.token.application.dtos.JwtTokenDto;
 import com.weg.infoweg.modules.token.application.port.TokenService;
 import com.weg.infoweg.modules.token.domain.exceptions.TokenInvalidException;
+import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
-public class RefleshUserCase {
+@Component
+public class RefreshUserCase {
 
     private final TokenService tokenService;
 
     // Injeção de dependência via construtor
-    public RefleshUserCase(TokenService tokenService) {
+    public RefreshUserCase(TokenService tokenService) {
         this.tokenService = tokenService;
     }
 

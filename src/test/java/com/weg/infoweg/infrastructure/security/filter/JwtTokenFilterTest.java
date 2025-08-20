@@ -1,22 +1,25 @@
 package com.weg.infoweg.infrastructure.security.filter;
+
 import com.weg.infoweg.infrastructure.provider.JwtTokenProvider;
+import com.weg.infoweg.infrastructure.security.filter.JwtTokenFilter;
+import com.weg.infoweg.infrastructure.security.user.UserDetailsImpl;
 import com.weg.infoweg.infrastructure.security.user.UserDetailsServiceImpl;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import com.weg.infoweg.modules.token.application.dtos.JwtTokenDto;
+import com.weg.infoweg.modules.token.application.port.TokenService;
+import com.weg.infoweg.modules.user.domain.enums.AccessLevel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.context.SecurityContext;
 
-import java.io.IOException;
-import java.util.Collections;
+import jakarta.servlet.FilterChain;
+
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -34,97 +37,91 @@ public class JwtTokenFilterTest {
     private UserDetailsServiceImpl userDetailsService;
 
     @Mock
-    private HttpServletRequest request;
-
-    @Mock
-    private HttpServletResponse response;
+    private TokenService tokenService;
 
     @Mock
     private FilterChain filterChain;
 
+    private MockHttpServletRequest request;
+    private MockHttpServletResponse response;
+
+    private final String email = "teste@email.com";
+    private final String validToken = "tokenValido";
+
+    private UserDetailsImpl userDetails;
+
     @BeforeEach
-    public void setUp() {
-        // Limpa o contexto de segurança antes de cada teste
+    void setUp() {
+        request = new MockHttpServletRequest();
+        response = new MockHttpServletResponse();
+
+        userDetails = new UserDetailsImpl(
+                UUID.randomUUID(),
+                AccessLevel.STUDENT,
+                "senhaTeste",
+                email,
+                "USER"
+        );
+
         SecurityContextHolder.clearContext();
     }
 
     @Test
-    public void doFilterInternal_WithValidJwtToken_ShouldSetAuthentication() throws ServletException, IOException {
-        String jwtToken = "valid-jwt-token";
-        String username = "usuarioTeste";
-        UserDetails userDetails = new User(username, "senha", Collections.emptyList());
+    void doFilterInternal_WithValidToken_ShouldSetAuthentication() throws Exception {
+        // Header com token Bearer
+        request.addHeader("Authorization", "Bearer " + validToken);
 
-        // Simula o cabeçalho da requisição
-        when(request.getHeader("Authorization")).thenReturn("Bearer " + jwtToken);
+        when(jwtTokenProvider.valideToken(validToken)).thenReturn(true);
+        when(tokenService.checkValidToken(new JwtTokenDto(validToken))).thenReturn(true);
+        when(jwtTokenProvider.getEmailFromJWT(validToken)).thenReturn(email);
+        when(userDetailsService.loadUserByUsername(email)).thenReturn(userDetails);
 
-        // Define o comportamento dos mocks do provider e do service
-        when(jwtTokenProvider.valideToken(jwtToken)).thenReturn(true);
-        when(jwtTokenProvider.getUsernameFromJWT(jwtToken)).thenReturn(username);
-        when(userDetailsService.loadUserByUsername(username)).thenReturn(userDetails);
-
-        // Chama o método a ser testado
         jwtTokenFilter.doFilterInternal(request, response, filterChain);
 
-        // Verifica se a autenticação foi setada no SecurityContextHolder
-        assertNotNull(SecurityContextHolder.getContext().getAuthentication());
-        assertEquals(username, SecurityContextHolder.getContext().getAuthentication().getName());
+        SecurityContext context = SecurityContextHolder.getContext();
+        assertNotNull(context.getAuthentication());
+        assertEquals(userDetails, context.getAuthentication().getPrincipal());
 
-        // Verifica se o filterChain.doFilter foi chamado
-        verify(filterChain, times(1)).doFilter(request, response);
+        verify(filterChain).doFilter(request, response);
     }
 
     @Test
-    public void doFilterInternal_WithoutJwtToken_ShouldNotSetAuthentication() throws ServletException, IOException {
-        // Simula uma requisição sem o cabeçalho de autorização
-        when(request.getHeader("Authorization")).thenReturn(null);
+    void doFilterInternal_WithInvalidToken_ShouldNotSetAuthentication() throws Exception {
+        request.addHeader("Authorization", "Bearer " + validToken);
 
-        // Chama o método a ser testado
+        when(jwtTokenProvider.valideToken(validToken)).thenReturn(false);
+
         jwtTokenFilter.doFilterInternal(request, response, filterChain);
 
-        // Verifica se a autenticação NÃO foi setada
-        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        SecurityContext context = SecurityContextHolder.getContext();
+        assertNull(context.getAuthentication());
 
-        // Verifica se o filterChain.doFilter foi chamado
-        verify(filterChain, times(1)).doFilter(request, response);
+        verify(filterChain).doFilter(request, response);
     }
 
     @Test
-    public void doFilterInternal_WithInvalidJwtToken_ShouldNotSetAuthentication() throws ServletException, IOException {
-        String jwtToken = "invalid-jwt-token";
+    void doFilterInternal_WithNoToken_ShouldNotSetAuthentication() throws Exception {
+        // Nenhum header Authorization
 
-        // Simula o cabeçalho da requisição
-        when(request.getHeader("Authorization")).thenReturn("Bearer " + jwtToken);
-
-        // Define o mock do provider para retornar false na validação
-        when(jwtTokenProvider.valideToken(jwtToken)).thenReturn(false);
-
-        // Chama o método a ser testado
         jwtTokenFilter.doFilterInternal(request, response, filterChain);
 
-        // Verifica se a autenticação NÃO foi setada
-        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        SecurityContext context = SecurityContextHolder.getContext();
+        assertNull(context.getAuthentication());
 
-        // Verifica se o filterChain.doFilter foi chamado
-        verify(filterChain, times(1)).doFilter(request, response);
+        verify(filterChain).doFilter(request, response);
     }
 
     @Test
-    public void doFilterInternal_OnException_ShouldClearAuthentication() throws ServletException, IOException {
-        String jwtToken = "malformed-jwt-token";
+    void doFilterInternal_WhenExceptionOccurs_ShouldClearAuthentication() throws Exception {
+        request.addHeader("Authorization", "Bearer " + validToken);
 
-        // Simula o cabeçalho da requisição
-        when(request.getHeader("Authorization")).thenReturn("Bearer " + jwtToken);
+        when(jwtTokenProvider.valideToken(validToken)).thenThrow(new RuntimeException("Erro"));
 
-        // Simula uma exceção ao tentar validar o token
-        doThrow(new RuntimeException("Simulated validation error")).when(jwtTokenProvider).valideToken(jwtToken);
-
-        // Chama o método a ser testado
         jwtTokenFilter.doFilterInternal(request, response, filterChain);
 
-        // Verifica se a autenticação foi setada como null
-        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        SecurityContext context = SecurityContextHolder.getContext();
+        assertNull(context.getAuthentication());
 
-        // Verifica se o filterChain.doFilter foi chamado
-        verify(filterChain, times(1)).doFilter(request, response);
+        verify(filterChain).doFilter(request, response);
     }
 }

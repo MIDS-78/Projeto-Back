@@ -1,7 +1,7 @@
 package com.weg.infoweg.modules.auth.domain.service;
 
 import com.weg.infoweg.modules.auth.domain.cases.LogoutUserCase;
-import com.weg.infoweg.modules.auth.domain.cases.RefleshUserCase;
+import com.weg.infoweg.modules.auth.domain.cases.RefreshUserCase;
 import com.weg.infoweg.modules.token.application.dtos.JwtTokenDto;
 import com.weg.infoweg.modules.auth.aplication.dtos.login.UserLoginRequest;
 import com.weg.infoweg.modules.auth.aplication.dtos.login.UserLoginResponse;
@@ -21,13 +21,15 @@ public class AuthServiceImpl implements AuthService {
 
     private final RegisterUserCase registerUserCase;
 
-    private LogoutUserCase logoutUserCase;
+    private final LogoutUserCase logoutUserCase;
 
-    private RefleshUserCase refleshUserCase;
+    private final RefreshUserCase refreshUserCase;
 
-    public AuthServiceImpl(LoginUserCase loginUserCase, RegisterUserCase registerUserCase) {
+    public AuthServiceImpl(LoginUserCase loginUserCase, RegisterUserCase registerUserCase, LogoutUserCase logoutUserCase, RefreshUserCase refreshUserCase) {
         this.loginUserCase = loginUserCase;
         this.registerUserCase = registerUserCase;
+        this.logoutUserCase = logoutUserCase;
+        this.refreshUserCase = refreshUserCase;
     }
 
     @Override
@@ -47,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public JwtTokenDto reflesh(UUID id, JwtTokenDto jwtTokenDto) {
-        return refleshUserCase.execute(id, jwtTokenDto);
+    public JwtTokenDto refresh(UUID id, JwtTokenDto jwtTokenDto) {
+        return refreshUserCase.execute(id, jwtTokenDto);
     }
 }

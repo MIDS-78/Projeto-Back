@@ -7,12 +7,8 @@ import com.weg.infoweg.modules.user.domain.ports.UserRepository;
 import com.weg.infoweg.modules.user.domain.valueobjects.Email;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Mockito;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -20,51 +16,60 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
-public class UserDetailsServiceImplTest {
+class UserDetailsServiceImplTest {
 
-
-    // Simula o repositório, não chamando o código real do DB
-    @Mock
     private UserRepository userRepository;
-
-    // Injeta os mocks na classe que estamos testando
-    @InjectMocks
     private UserDetailsServiceImpl userDetailsService;
-
-    // Objeto de usuário para usar nos testes
-    private User user;
 
     @BeforeEach
     void setUp() {
-
-        // Inicializa o objeto de usuário antes de cada teste
-        user = new User("testuser", new Email("jaafadsa@weg.net"), "password123", "3423424234234", AccessLevel.STUDENT);
+        userRepository = Mockito.mock(UserRepository.class);
+        userDetailsService = new UserDetailsServiceImpl(userRepository);
     }
 
     @Test
     void loadUserByUsername_UserFound_ReturnsUserDetails() {
-        // Define o comportamento do repositório
-        when(userRepository.findByUserName("testuser")).thenReturn(Optional.of(user));
+        // Criando um usuário de teste
+        UUID userId = UUID.randomUUID();
+        User mockUser = new User(
+                userId,
+                "testeUsuario",
+                new Email("teste@exemplo.com"),
+                "senhaHashed",
+                "+5511999999999",
+                AccessLevel.STUDENT
+        );
 
-        // Chama o método que queremos testar
-        UserDetails userDetails = userDetailsService.loadUserByUsername("testuser");
+        // Configurando o mock para aceitar qualquer Email com o mesmo endereço
+        when(userRepository.findByEmail(argThat(email -> email.getAddress().equals("teste@exemplo.com"))))
+                .thenReturn(Optional.of(mockUser));
 
-        // Verifica se o resultado está correto
+        // Executando o método
+        UserDetailsImpl userDetails = (UserDetailsImpl) userDetailsService.loadUserByUsername("teste@exemplo.com");
+
+        // Verificando resultados
         assertNotNull(userDetails);
-        assertEquals(user.getUsername(), userDetails.getUsername());
-        verify(userRepository, times(1)).findByUserName("testuser");
+        assertEquals(mockUser.getEmail().getAddress(), userDetails.getEmail());
+        assertEquals(mockUser.getPasswordHash(), userDetails.getPassword());
+
+        // Verificando que o método do repositório foi chamado corretamente
+        verify(userRepository, times(1))
+                .findByEmail(argThat(email -> email.getAddress().equals("teste@exemplo.com")));
     }
 
     @Test
     void loadUserByUsername_UserNotFound_ThrowsException() {
-        // Define o comportamento do repositório para retornar vazio
-        when(userRepository.findByUserName("nonexistent")).thenReturn(Optional.empty());
+        String nonexistentEmailStr = "naoexiste@exemplo.com";
 
-        // Verifica se o método lança a exceção esperada
-        assertThrows(UserNotFoundException.class, () -> {
-            userDetailsService.loadUserByUsername("nonexistent");
-        });
-        verify(userRepository, times(1)).findByUserName("nonexistent");
+        // Usando any(Email.class) para aceitar qualquer Email que tenha esse valor
+        when(userRepository.findByEmail(any(Email.class))).thenReturn(Optional.empty());
+
+        // Verificando que lança exceção
+        assertThrows(UserNotFoundException.class, () ->
+                userDetailsService.loadUserByUsername(nonexistentEmailStr)
+        );
+
+        // Você pode verificar que foi chamado com qualquer Email, ou com um matcher mais específico
+        verify(userRepository, times(1)).findByEmail(any(Email.class));
     }
 }
