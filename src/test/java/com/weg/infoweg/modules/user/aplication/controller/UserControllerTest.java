@@ -61,7 +61,7 @@ class UserControllerTest {
         when(userService.createUser(any(UserCreateRequest.class), any(UUID.class))).thenReturn(response);
 
         // Act
-        ResponseEntity<UserCreateResponse> responseEntity = userController.createUser(request);
+        ResponseEntity<ResponseApiDto<UserCreateResponse>> responseEntity = userController.createUser(request);
 
         // Assert
         assertEquals(200, responseEntity.getStatusCode().value());
