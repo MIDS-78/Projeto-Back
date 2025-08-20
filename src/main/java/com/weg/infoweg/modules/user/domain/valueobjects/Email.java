@@ -3,6 +3,8 @@ package com.weg.infoweg.modules.user.domain.valueobjects;
 import com.weg.infoweg.modules.user.domain.exceptions.InvalidEmailException;
 import com.weg.infoweg.modules.user.domain.ports.EmailValidator;
 
+import java.util.Objects;
+
 public class Email {
 
     private final String address;
@@ -25,5 +27,18 @@ public class Email {
     @Override
     public String toString() {
         return address;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Email email = (Email) o;
+        return Objects.equals(address, email.address);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(address);
     }
 }
