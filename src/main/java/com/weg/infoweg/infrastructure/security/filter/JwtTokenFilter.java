@@ -1,9 +1,11 @@
 package com.weg.infoweg.infrastructure.security.filter;
 
 import com.weg.infoweg.infrastructure.provider.JwtTokenProvider;
+import com.weg.infoweg.infrastructure.security.user.UserDetailsImpl;
 import com.weg.infoweg.modules.token.application.port.TokenService;
 import com.weg.infoweg.infrastructure.security.user.UserDetailsServiceImpl;
 import com.weg.infoweg.modules.token.application.dtos.JwtTokenDto;
+import com.weg.infoweg.modules.user.domain.valueobjects.Email;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,7 +43,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     && tokenService.checkValidToken(new JwtTokenDto(jwt))) { // verifica revogação no DB
 
                 String email = jwtTokenProvider.getEmailFromJWT(jwt);
-                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                UserDetailsImpl userDetails = (UserDetailsImpl) userDetailsService.loadUserByUsername(email);
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
