@@ -1,32 +1,34 @@
 package com.weg.infoweg.infrastructure.security.filter;
 
 import com.weg.infoweg.infrastructure.provider.JwtTokenProvider;
-import com.weg.infoweg.infrastructure.security.user.UserDetailsServiceImpl;
 import com.weg.infoweg.infrastructure.security.filter.JwtTokenFilter;
+import com.weg.infoweg.infrastructure.security.user.UserDetailsImpl;
+import com.weg.infoweg.infrastructure.security.user.UserDetailsServiceImpl;
+import com.weg.infoweg.modules.token.application.dtos.JwtTokenDto;
 import com.weg.infoweg.modules.token.application.port.TokenService;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import com.weg.infoweg.modules.user.domain.enums.AccessLevel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.util.StringUtils;
+import org.springframework.security.core.context.SecurityContext;
 
-import java.util.ArrayList;
+import jakarta.servlet.FilterChain;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.anyString;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class JwtTokenFilterTest {
+public class JwtTokenFilterTest {
+
+    @InjectMocks
+    private JwtTokenFilter jwtTokenFilter;
 
     @Mock
     private JwtTokenProvider jwtTokenProvider;
@@ -35,63 +37,91 @@ class JwtTokenFilterTest {
     private UserDetailsServiceImpl userDetailsService;
 
     @Mock
-    private TokenService tokenService; // <-- adicionado
-
-    @InjectMocks
-    private JwtTokenFilter jwtTokenFilter;
-
-    @Mock
-    private HttpServletRequest request;
-
-    @Mock
-    private HttpServletResponse response;
+    private TokenService tokenService;
 
     @Mock
     private FilterChain filterChain;
 
+    private MockHttpServletRequest request;
+    private MockHttpServletResponse response;
+
+    private final String email = "teste@email.com";
+    private final String validToken = "tokenValido";
+
+    private UserDetailsImpl userDetails;
+
     @BeforeEach
     void setUp() {
+        request = new MockHttpServletRequest();
+        response = new MockHttpServletResponse();
+
+        userDetails = new UserDetailsImpl(
+                UUID.randomUUID(),
+                AccessLevel.STUDENT,
+                "senhaTeste",
+                email,
+                "USER"
+        );
+
         SecurityContextHolder.clearContext();
     }
 
     @Test
-    void shouldSetAuthenticationOnValidToken() throws Exception {
-        String token = "valid-jwt-token";
-        String username = "testuser";
-        UserDetails userDetails = new User(username, "password", new ArrayList<>());
+    void doFilterInternal_WithValidToken_ShouldSetAuthentication() throws Exception {
+        // Header com token Bearer
+        request.addHeader("Authorization", "Bearer " + validToken);
 
-        when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
-        when(jwtTokenProvider.valideToken(token)).thenReturn(true);
-        when(jwtTokenProvider.getUsernameFromJWT(token)).thenReturn(username);
-        when(userDetailsService.loadUserByUsername(username)).thenReturn(userDetails);
-        when(tokenService.checkValidToken(any())).thenReturn(true); // <-- muito importante
+        when(jwtTokenProvider.valideToken(validToken)).thenReturn(true);
+        when(tokenService.checkValidToken(new JwtTokenDto(validToken))).thenReturn(true);
+        when(jwtTokenProvider.getEmailFromJWT(validToken)).thenReturn(email);
+        when(userDetailsService.loadUserByUsername(email)).thenReturn(userDetails);
 
         jwtTokenFilter.doFilterInternal(request, response, filterChain);
 
-        assertNotNull(SecurityContextHolder.getContext().getAuthentication());
-        verify(filterChain, times(1)).doFilter(request, response);
+        SecurityContext context = SecurityContextHolder.getContext();
+        assertNotNull(context.getAuthentication());
+        assertEquals(userDetails, context.getAuthentication().getPrincipal());
+
+        verify(filterChain).doFilter(request, response);
     }
 
     @Test
-    void shouldNotSetAuthenticationOnInvalidToken() throws Exception {
-        String token = "invalid-jwt-token";
+    void doFilterInternal_WithInvalidToken_ShouldNotSetAuthentication() throws Exception {
+        request.addHeader("Authorization", "Bearer " + validToken);
 
-        when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
-        when(jwtTokenProvider.valideToken(token)).thenReturn(false);
+        when(jwtTokenProvider.valideToken(validToken)).thenReturn(false);
 
         jwtTokenFilter.doFilterInternal(request, response, filterChain);
 
-        assertNull(SecurityContextHolder.getContext().getAuthentication());
-        verify(filterChain, times(1)).doFilter(request, response);
+        SecurityContext context = SecurityContextHolder.getContext();
+        assertNull(context.getAuthentication());
+
+        verify(filterChain).doFilter(request, response);
     }
 
     @Test
-    void shouldNotSetAuthenticationWhenTokenIsMissing() throws Exception {
-        when(request.getHeader("Authorization")).thenReturn(null);
+    void doFilterInternal_WithNoToken_ShouldNotSetAuthentication() throws Exception {
+        // Nenhum header Authorization
 
         jwtTokenFilter.doFilterInternal(request, response, filterChain);
 
-        assertNull(SecurityContextHolder.getContext().getAuthentication());
-        verify(filterChain, times(1)).doFilter(request, response);
+        SecurityContext context = SecurityContextHolder.getContext();
+        assertNull(context.getAuthentication());
+
+        verify(filterChain).doFilter(request, response);
+    }
+
+    @Test
+    void doFilterInternal_WhenExceptionOccurs_ShouldClearAuthentication() throws Exception {
+        request.addHeader("Authorization", "Bearer " + validToken);
+
+        when(jwtTokenProvider.valideToken(validToken)).thenThrow(new RuntimeException("Erro"));
+
+        jwtTokenFilter.doFilterInternal(request, response, filterChain);
+
+        SecurityContext context = SecurityContextHolder.getContext();
+        assertNull(context.getAuthentication());
+
+        verify(filterChain).doFilter(request, response);
     }
 }
