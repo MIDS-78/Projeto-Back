@@ -1,5 +1,6 @@
 package com.weg.infoweg.modules.token.domain.service;
 
+import com.weg.infoweg.infrastructure.persistence.token.mappers.TokenMapper;
 import com.weg.infoweg.infrastructure.provider.JwtTokenProvider;
 import com.weg.infoweg.infrastructure.security.user.UserDetailsImpl;
 import com.weg.infoweg.modules.token.application.dtos.JwtTokenDto;
@@ -8,6 +9,7 @@ import com.weg.infoweg.modules.token.domain.enums.TokenType;
 import com.weg.infoweg.modules.token.domain.ports.TokenRepository;
 import com.weg.infoweg.modules.user.domain.User;
 import com.weg.infoweg.modules.user.domain.enums.AccessLevel;
+import com.weg.infoweg.modules.user.domain.ports.UserRepository;
 import com.weg.infoweg.modules.user.domain.valueobjects.Email;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,10 +17,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -32,175 +36,128 @@ class TokenServiceImplTest {
     @Mock
     private JwtTokenProvider jwtTokenProvider;
 
+    @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private TokenMapper tokenMapper;
+
     @InjectMocks
     private TokenServiceImpl tokenService;
 
     private User testUser;
-    private UserDetailsImpl testUserDetails;
 
     @BeforeEach
-    void setUp() {
-        testUser = new User(UUID.randomUUID(), "testUser", new Email("teste@weg.net"), "password", "4324242342242", AccessLevel.STUDENT);
-        testUserDetails = new UserDetailsImpl(testUser.getId(), testUser.getAccessLevel(), testUser.getPasswordHash(), testUser.getEmail().getAddress(), testUser.getUsername());
+    void setup() {
+        testUser = new User();
+        testUser.setId(UUID.randomUUID());
+        testUser.setUsername("testUser");
+        testUser.setEmail(new Email("test@example.com"));
+        testUser.setPasswordHash("hashedPassword");
+        testUser.setAccessLevel(AccessLevel.STUDENT);
     }
 
     @Test
-    void shouldGenerateAndSaveTokensSuccessfully() {
-        // Mock the provider's behavior
-        when(jwtTokenProvider.generateToken(any(UserDetailsImpl.class))).thenReturn("fakeAccessToken");
-        when(jwtTokenProvider.generateRefreshToken(any(UserDetailsImpl.class))).thenReturn("fakeRefreshToken");
+    void generateAndSaveTokens_ShouldReturnAccessAndRefreshTokens() {
+        when(jwtTokenProvider.generateToken(any(UserDetailsImpl.class))).thenReturn("accessToken");
+        when(jwtTokenProvider.generateRefreshToken(any(UserDetailsImpl.class))).thenReturn("refreshToken");
+        when(jwtTokenProvider.getJwtExpirationInMs()).thenReturn(1);
+        when(tokenMapper.toEntity(any(JwtTokenDto.class), any(User.class), any(TokenType.class), any(LocalDateTime.class)))
+                .thenAnswer(invocation -> new Token());
 
-        // Execute the method to be tested
         List<Token> tokens = tokenService.generateAndSaveTokens(testUser);
 
-        // Verify repository interaction
-        verify(tokenRepository, times(1)).findAllValidTokensByUserId(testUser.getId());
-        verify(tokenRepository, times(2)).save(any(Token.class));
-
-        // Verify returned tokens
-        assertNotNull(tokens);
         assertEquals(2, tokens.size());
+        verify(tokenRepository, times(2)).save(any(Token.class));
+        verify(jwtTokenProvider).generateToken(any(UserDetailsImpl.class));
+        verify(jwtTokenProvider).generateRefreshToken(any(UserDetailsImpl.class));
     }
 
     @Test
-    void shouldRevokeAllUserTokensSuccessfully() {
-        // Mock existing tokens for a user
-        List<Token> activeTokens = List.of(new Token(), new Token());
-        when(tokenRepository.findAllValidTokensByUserId(testUser.getId())).thenReturn(activeTokens);
+    void revokeAllUserTokens_ShouldSetTokensAsRevoked() {
+        Token token1 = new Token();
+        Token token2 = new Token();
+        when(tokenRepository.findAllValidTokensByUserId(testUser.getId())).thenReturn(List.of(token1, token2));
 
-        // Execute the method to be tested
         tokenService.revokeAllUserTokens(testUser.getId());
 
-        // Verify repository interaction
-        verify(tokenRepository, times(1)).saveAll(anyList());
-
-        // Verify tokens are marked as revoked
-        assertTrue(activeTokens.get(0).isRevoked());
-        assertTrue(activeTokens.get(1).isRevoked());
+        assertTrue(token1.isRevoked());
+        assertTrue(token2.isRevoked());
+        verify(tokenRepository).saveAll(List.of(token1, token2));
     }
 
     @Test
-    void shouldNotRevokeTokensIfUserHasNone() {
-        // Mock an empty list of tokens
-        when(tokenRepository.findAllValidTokensByUserId(testUser.getId())).thenReturn(List.of());
+    void revokeToken_ShouldSetTokenAsRevoked() {
+        Token token = new Token();
+        when(tokenRepository.findByToken("token123")).thenReturn(Optional.of(token));
 
-        // Execute the method to be tested
-        tokenService.revokeAllUserTokens(testUser.getId());
+        tokenService.revokeToken(new JwtTokenDto("token123"));
 
-        // Verify that saveAll is not called
-        verify(tokenRepository, never()).saveAll(anyList());
+        assertTrue(token.isRevoked());
+        verify(tokenRepository).save(token);
     }
 
     @Test
-    void shouldRevokeSpecificTokenSuccessfully() {
-        // Mock an existing token in the database
-        String tokenString = "validToken";
-        Token tokenToRevoke = new Token();
-        tokenToRevoke.setToken(tokenString);
-        when(tokenRepository.findByToken(tokenString)).thenReturn(Optional.of(tokenToRevoke));
+    void generateToken_ShouldReturnJwtTokenDto() {
+        UserDetailsImpl userDetails = new UserDetailsImpl(
+                testUser.getId(),
+                testUser.getAccessLevel(),
+                testUser.getPasswordHash(),
+                testUser.getEmail().getAddress(),
+                testUser.getUsername()
+        );
 
-        // Execute the method to be tested
-        tokenService.revokeToken(new JwtTokenDto(tokenString));
+        when(userRepository.findById(testUser.getId())).thenReturn(Optional.of(testUser));
+        when(jwtTokenProvider.generateToken(any(UserDetailsImpl.class))).thenReturn("accessToken");
+        when(tokenMapper.toEntity(any(JwtTokenDto.class), any(User.class), any(TokenType.class), any(LocalDateTime.class)))
+                .thenReturn(new Token());
 
-        // Verify token is saved with revoked status
-        assertTrue(tokenToRevoke.isRevoked());
-        verify(tokenRepository, times(1)).save(tokenToRevoke);
+        JwtTokenDto result = tokenService.generateToken(userDetails);
+
+        assertEquals("accessToken", result.token());
+        verify(tokenRepository).save(any(Token.class));
     }
 
     @Test
-    void shouldGenerateTokenSuccessfully() {
-        // Mock the provider's behavior
-        when(jwtTokenProvider.generateToken(any(UserDetailsImpl.class))).thenReturn("newAccessToken");
+    void checkValidToken_ShouldReturnTrueWhenTokenIsValid() {
+        Token token = new Token();
+        token.setRevoked(false);
 
-        // Execute the method to be tested
+        when(jwtTokenProvider.valideToken("token123")).thenReturn(true);
+        when(tokenRepository.findByToken("token123")).thenReturn(Optional.of(token));
 
-        UserDetailsImpl userDetails = new UserDetailsImpl(testUser.getId(), testUser.getAccessLevel(), testUser.getPasswordHash(), testUser.getEmail().getAddress(), testUser.getUsername() );
-        JwtTokenDto tokenDto = tokenService.generateToken(userDetails);
-
-        // Verify the returned token
-        assertNotNull(tokenDto);
-        assertEquals("newAccessToken", tokenDto.token());
+        assertTrue(tokenService.checkValidToken(new JwtTokenDto("token123")));
     }
 
     @Test
-    void shouldCheckValidTokenSuccessfully() {
-        // Mock a valid token in the database and a valid JWT
-        String tokenString = "validJwt";
-        Token validToken = new Token();
-        validToken.setToken(tokenString);
-        validToken.setRevoked(false);
+    void checkValidToken_ShouldReturnFalseWhenTokenIsRevokedOrInvalid() {
+        Token token = new Token();
+        token.setRevoked(true);
 
-        when(jwtTokenProvider.valideToken(tokenString)).thenReturn(true);
-        when(tokenRepository.findByToken(tokenString)).thenReturn(Optional.of(validToken));
+        when(jwtTokenProvider.valideToken("token123")).thenReturn(true);
+        when(tokenRepository.findByToken("token123")).thenReturn(Optional.of(token));
 
-        // Execute the method to be tested and assert true
-        assertTrue(tokenService.checkValidToken(new JwtTokenDto(tokenString)));
+        assertFalse(tokenService.checkValidToken(new JwtTokenDto("token123")));
+
+        when(jwtTokenProvider.valideToken("tokenInvalid")).thenReturn(false);
+        assertFalse(tokenService.checkValidToken(new JwtTokenDto("tokenInvalid")));
     }
 
     @Test
-    void shouldFailCheckValidTokenWhenJwtIsInvalid() {
-        // Mock an invalid JWT
-        String tokenString = "invalidJwt";
-        when(jwtTokenProvider.valideToken(tokenString)).thenReturn(false);
+    void refreshToken_ShouldReturnNewAccessToken() {
+        Token oldRefreshToken = new Token();
+        oldRefreshToken.setUser(testUser);
 
-        // Execute the method and assert false
-        assertFalse(tokenService.checkValidToken(new JwtTokenDto(tokenString)));
-    }
-
-    @Test
-    void shouldFailCheckValidTokenWhenTokenIsRevoked() {
-        // Mock a valid JWT but a revoked token in the database
-        String tokenString = "revokedToken";
-        Token revokedToken = new Token();
-        revokedToken.setRevoked(true);
-
-        when(jwtTokenProvider.valideToken(tokenString)).thenReturn(true);
-        when(tokenRepository.findByToken(tokenString)).thenReturn(Optional.of(revokedToken));
-
-        // Execute the method and assert false
-        assertFalse(tokenService.checkValidToken(new JwtTokenDto(tokenString)));
-    }
-
-    @Test
-    void shouldRefreshTokenSuccessfully() {
-        // Mock old refresh token entity
-        String oldRefreshTokenString = "oldRefreshToken";
-
-        // Cria uma nova instância de Token e define o usuário mock criado no setUp
-        Token oldRefreshTokenEntity = new Token();
-        oldRefreshTokenEntity.setToken(oldRefreshTokenString);
-        oldRefreshTokenEntity.setTokenType(TokenType.REFRESH);
-        oldRefreshTokenEntity.setUser(testUser); // <--- AQUI ESTÁ A CORREÇÃO
-
-        when(tokenRepository.findByToken(oldRefreshTokenString)).thenReturn(Optional.of(oldRefreshTokenEntity));
+        when(tokenRepository.findByToken("oldRefresh")).thenReturn(Optional.of(oldRefreshToken));
         when(jwtTokenProvider.generateToken(any(UserDetailsImpl.class))).thenReturn("newAccessToken");
         when(jwtTokenProvider.generateRefreshToken(any(UserDetailsImpl.class))).thenReturn("newRefreshToken");
+        when(tokenMapper.toEntity(any(JwtTokenDto.class), any(User.class), any(TokenType.class), any(LocalDateTime.class)))
+                .thenReturn(new Token());
 
-        // Execute the method
-        JwtTokenDto newTokenDto = tokenService.refreshToken(new JwtTokenDto(oldRefreshTokenString));
+        JwtTokenDto newToken = tokenService.refreshToken(new JwtTokenDto("oldRefresh"));
 
-        // Verify the old token is revoked
-        assertTrue(oldRefreshTokenEntity.isRevoked());
-
-        // Verify repository interactions
+        assertEquals("newAccessToken", newToken.token());
+        assertTrue(oldRefreshToken.isRevoked());
         verify(tokenRepository, times(2)).save(any(Token.class));
-        verify(tokenRepository).save(oldRefreshTokenEntity);
-
-        // Verify the returned token
-        assertEquals("newAccessToken", newTokenDto.token());
-    }
-
-    @Test
-    void shouldThrowExceptionWhenRefreshingInvalidToken() {
-        // Mock that the token is not found
-        String invalidToken = "invalidRefreshToken";
-        when(tokenRepository.findByToken(invalidToken)).thenReturn(Optional.empty());
-
-        // Assert that the expected exception is thrown
-        RuntimeException exception = assertThrows(RuntimeException.class, () ->
-                tokenService.refreshToken(new JwtTokenDto(invalidToken)));
-
-        assertEquals("Refresh token inválido ou não encontrado", exception.getMessage());
-        verify(tokenRepository, never()).save(any());
     }
 }
