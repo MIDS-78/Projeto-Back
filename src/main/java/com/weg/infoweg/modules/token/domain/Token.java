@@ -54,8 +54,16 @@ public class Token {
     public Token() {
     }
 
-    public Token(String accessToken, TokenType tokenType, User user) {
+    public Token(String token, TokenType tokenType, User user, LocalDateTime expiresAt) {
+        this.token = token;
+        this.tokenType = tokenType;
+        this.user = user;
+        this.isRevoked = false;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.expiresAt = expiresAt;
     }
+
 
 
     public UUID getId() {

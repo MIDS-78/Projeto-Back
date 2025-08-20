@@ -1,5 +1,6 @@
 package com.weg.infoweg.modules.token.domain.service;
 
+import com.weg.infoweg.infrastructure.persistence.token.mappers.TokenMapper;
 import com.weg.infoweg.infrastructure.provider.JwtTokenProvider;
 import com.weg.infoweg.infrastructure.security.user.UserDetailsImpl;
 import com.weg.infoweg.modules.token.application.dtos.JwtTokenDto;
@@ -27,12 +28,14 @@ public class TokenServiceImpl implements TokenService {
     private final TokenRepository tokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
+    private final TokenMapper tokenMapper;
 
     // A dependência do JwtTokenProvider deve ser injetada no construtor
-    public TokenServiceImpl(TokenRepository tokenRepository, JwtTokenProvider jwtTokenProvider, UserRepository userRepository) {
+    public TokenServiceImpl(TokenRepository tokenRepository, JwtTokenProvider jwtTokenProvider, UserRepository userRepository, TokenMapper tokenMapper) {
         this.tokenRepository = tokenRepository;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userRepository = userRepository;
+        this.tokenMapper = tokenMapper;
     }
 
     // Este método é responsável por gerar e persistir tokens de acesso e refresh.
@@ -56,8 +59,8 @@ public class TokenServiceImpl implements TokenService {
         String accessToken = jwtTokenProvider.generateToken(userDetails);
         String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails);
 
-        Token accessTokenEntity = new Token(accessToken, TokenType.ACCESS, user);
-        Token refreshTokenEntity = new Token(refreshToken, TokenType.REFRESH, user);
+        Token accessTokenEntity = tokenMapper.toEntity(new JwtTokenDto(accessToken), user, TokenType.ACCESS, LocalDateTime.now().plusHours(jwtTokenProvider.getJwtExpirationInMs()));
+        Token refreshTokenEntity =  tokenMapper.toEntity(new JwtTokenDto(refreshToken), user, TokenType.ACCESS, LocalDateTime.now().plusHours(jwtTokenProvider.getJwtExpirationInMs()));
 
         tokenRepository.save(accessTokenEntity);
         tokenRepository.save(refreshTokenEntity);
@@ -105,15 +108,18 @@ public class TokenServiceImpl implements TokenService {
     // 2. Retornar o DTO do token gerado.
     @Override
     public JwtTokenDto generateToken(UserDetailsImpl userDetails) {
-
-        User user = userRepository.findById(userDetails.getId()).orElseThrow(() -> new UserNotFoundException("User not found"));
+        UUID userId = userDetails.getId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User with ID " + userId + " not found"));
 
         String accessToken = jwtTokenProvider.generateToken(userDetails);
 
-        tokenRepository.save(new Token(accessToken,TokenType.ACCESS, user ));
+        Token tokenEntity = tokenMapper.toEntity(new JwtTokenDto(accessToken), user, TokenType.ACCESS, LocalDateTime.now().plusHours(jwtTokenProvider.getJwtExpirationInMs()));
+        tokenRepository.save(tokenEntity);
 
         return new JwtTokenDto(accessToken);
     }
+
 
     // Este método verifica se um token é válido para uso.
     // Lógica esperada:
@@ -166,7 +172,7 @@ public class TokenServiceImpl implements TokenService {
         String newAccessToken = jwtTokenProvider.generateToken(userDetails);
 
         String newRefreshToken = jwtTokenProvider.generateRefreshToken(userDetails);
-        Token newRefreshTokenEntity = new Token(newRefreshToken, TokenType.REFRESH, user);
+        Token newRefreshTokenEntity = tokenMapper.toEntity(new JwtTokenDto(newAccessToken), user, TokenType.ACCESS, LocalDateTime.now().plusHours(jwtTokenProvider.getJwtExpirationInMs()));
         tokenRepository.save(newRefreshTokenEntity);
 
         oldRefreshTokenEntity.setRevoked(true);
