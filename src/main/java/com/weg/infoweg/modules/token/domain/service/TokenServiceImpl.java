@@ -8,6 +8,8 @@ import com.weg.infoweg.modules.token.domain.Token;
 import com.weg.infoweg.modules.token.domain.enums.TokenType;
 import com.weg.infoweg.modules.token.domain.ports.TokenRepository;
 import com.weg.infoweg.modules.user.domain.User;
+import com.weg.infoweg.modules.user.domain.exceptions.UserNotFoundException;
+import com.weg.infoweg.modules.user.domain.ports.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -24,11 +26,13 @@ public class TokenServiceImpl implements TokenService {
 
     private final TokenRepository tokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
 
     // A dependência do JwtTokenProvider deve ser injetada no construtor
-    public TokenServiceImpl(TokenRepository tokenRepository, JwtTokenProvider jwtTokenProvider) {
+    public TokenServiceImpl(TokenRepository tokenRepository, JwtTokenProvider jwtTokenProvider, UserRepository userRepository) {
         this.tokenRepository = tokenRepository;
         this.jwtTokenProvider = jwtTokenProvider;
+        this.userRepository = userRepository;
     }
 
     // Este método é responsável por gerar e persistir tokens de acesso e refresh.
@@ -102,8 +106,12 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public JwtTokenDto generateToken(UserDetailsImpl userDetails) {
 
+        User user = userRepository.findById(userDetails.getId()).orElseThrow(() -> new UserNotFoundException("User not found"));
 
         String accessToken = jwtTokenProvider.generateToken(userDetails);
+
+        tokenRepository.save(new Token(accessToken,TokenType.ACCESS, user ));
+
         return new JwtTokenDto(accessToken);
     }
 
