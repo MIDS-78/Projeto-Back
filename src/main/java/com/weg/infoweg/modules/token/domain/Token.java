@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
+@Table(name="tokens")
 public class Token {
 
     @Id
