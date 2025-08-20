@@ -40,8 +40,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     && jwtTokenProvider.valideToken(jwt)
                     && tokenService.checkValidToken(new JwtTokenDto(jwt))) { // verifica revogação no DB
 
-                String username = jwtTokenProvider.getUsernameFromJWT(jwt);
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                String email = jwtTokenProvider.getEmailFromJWT(jwt);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
