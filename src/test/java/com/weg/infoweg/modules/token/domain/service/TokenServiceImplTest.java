@@ -73,18 +73,22 @@ class TokenServiceImplTest {
         verify(jwtTokenProvider).generateRefreshToken(any(UserDetailsImpl.class));
     }
 
-    @Test
-    void revokeAllUserTokens_ShouldSetTokensAsRevoked() {
-        Token token1 = new Token();
-        Token token2 = new Token();
-        when(tokenRepository.findAllValidTokensByUserId(testUser.getId())).thenReturn(List.of(token1, token2));
+    // ---
 
+    @Test
+    void revokeAllUserTokens_ShouldCallRepositoryRevokeMethod() {
+        // Quando você chama o serviço
         tokenService.revokeAllUserTokens(testUser.getId());
 
-        assertTrue(token1.isRevoked());
-        assertTrue(token2.isRevoked());
-        verify(tokenRepository).saveAll(List.of(token1, token2));
+        // Agora, você verifica se o método de revogação em massa do repositório
+        // foi chamado exatamente uma vez com o ID do usuário correto.
+        verify(tokenRepository, times(1)).revokeAllUserTokens(testUser.getId());
+
+        // As asserções sobre o estado dos objetos token1 e token2 foram removidas,
+        // pois a lógica do serviço não os modifica mais em memória.
     }
+
+    // ---
 
     @Test
     void revokeToken_ShouldSetTokenAsRevoked() {
