@@ -76,14 +76,7 @@ public class TokenServiceImpl implements TokenService {
     // 3. Salvar as alterações no banco de dados.
     @Override
     public void revokeAllUserTokens(UUID userId) {
-        List<Token> activeTokens = tokenRepository.findAllValidTokensByUserId(userId);
-
-        if (activeTokens.isEmpty()) {
-            return;
-        }
-
-        activeTokens.forEach(t -> t.setRevoked(true));
-        tokenRepository.saveAll(activeTokens);
+        tokenRepository.revokeAllUserTokens(userId);
     }
 
     // Este método invalida um token específico.

@@ -27,4 +27,8 @@ public interface TokenRepositoryJpa extends JpaRepository<Token, UUID> {
     List<Token> findAllValidTokensByUserId(@Param("userId") UUID userId);
 
     List<Token> findByUserIdAndIsRevokedTrue(UUID userId);
+
+    @Modifying
+    @Query("UPDATE Token t SET t.isRevoked = true WHERE t.user.id = :userId AND t.isRevoked = false")
+    void revokeAllUserTokens(UUID userId);
 }

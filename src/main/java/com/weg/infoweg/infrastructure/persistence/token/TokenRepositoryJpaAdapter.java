@@ -54,6 +54,10 @@ public class TokenRepositoryJpaAdapter implements TokenRepository {
         tokenRepositoryJpa.saveAll(activeTokens);
     }
 
+    @Override
+    public void revokeAllUserTokens(UUID userId){
+        tokenRepositoryJpa.revokeAllUserTokens(userId);
+    }
 
 
 }

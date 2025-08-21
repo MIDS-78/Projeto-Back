@@ -32,10 +32,6 @@ public class LogoutUserCase {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado"));
 
-        // Revoga o token enviado
-        tokenService.revokeToken(jwtTokenDto);
-
-        //revoga todos os tokens do usuário
         tokenService.revokeAllUserTokens(userId);
     }
 }

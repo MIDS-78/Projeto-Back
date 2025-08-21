@@ -21,4 +21,7 @@ public interface TokenRepository {
     Token refreshTokenByTokenString(String tokenString);
 
     void saveAll(List<Token> activeTokens);
+
+    void revokeAllUserTokens(UUID userId);
+
 }
