@@ -10,16 +10,17 @@ public class Informative{
 
     @Id
     @GeneratedValue
+    @Column(name="id_informative")
     private UUID id;
 
-    @Column(nullable = false, length = 150)
+    @Column(name="title",nullable = false, length = 150)
     private String title;
 
-    @Column(nullable = false, length = 500)
-        private String description;
+    @Column(name="content",nullable = false, length = 500)
+    private String description;
 
     @Lob
-    @Column(nullable = false)
+    @Column(name="fk_id_image",nullable = false)
     private byte[] image;
 
     public Informative(){
