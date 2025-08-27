@@ -8,6 +8,7 @@ import com.weg.infoweg.modules.auth.aplication.dtos.register.UserRegisterRequest
 import com.weg.infoweg.modules.auth.aplication.dtos.register.UserRegisterResponse;
 import com.weg.infoweg.modules.auth.aplication.port.AuthService;
 import com.weg.infoweg.modules.token.application.dtos.JwtTokenDto;
+import com.weg.infoweg.modules.user.aplication.dtos.UserGetResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,5 +51,12 @@ public class AuthController {
         UUID id = userAuthenticationService.getIdUserAuthentication();
         JwtTokenDto newToken = authService.refresh(id, jwtTokenDto);
         return ResponseEntity.ok(ResponseApiDto.success("User refreshed successfully", newToken));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<ResponseApiDto<UserGetResponse>> getUser(){
+        UUID id = userAuthenticationService.getIdUserAuthentication();
+        UserGetResponse userGetResponse = authService.getUserAuthentication(id);
+        return ResponseEntity.ok(ResponseApiDto.success("User get with success", userGetResponse));
     }
 }
