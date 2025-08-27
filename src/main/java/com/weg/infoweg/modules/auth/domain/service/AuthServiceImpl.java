@@ -1,15 +1,13 @@
 package com.weg.infoweg.modules.auth.domain.service;
 
-import com.weg.infoweg.modules.auth.domain.cases.LogoutUserCase;
-import com.weg.infoweg.modules.auth.domain.cases.RefreshUserCase;
+import com.weg.infoweg.modules.auth.domain.cases.*;
 import com.weg.infoweg.modules.token.application.dtos.JwtTokenDto;
 import com.weg.infoweg.modules.auth.aplication.dtos.login.UserLoginRequest;
 import com.weg.infoweg.modules.auth.aplication.dtos.login.UserLoginResponse;
 import com.weg.infoweg.modules.auth.aplication.dtos.register.UserRegisterRequest;
 import com.weg.infoweg.modules.auth.aplication.dtos.register.UserRegisterResponse;
 import com.weg.infoweg.modules.auth.aplication.port.AuthService;
-import com.weg.infoweg.modules.auth.domain.cases.LoginUserCase;
-import com.weg.infoweg.modules.auth.domain.cases.RegisterUserCase;
+import com.weg.infoweg.modules.user.aplication.dtos.UserGetResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -25,11 +23,14 @@ public class AuthServiceImpl implements AuthService {
 
     private final RefreshUserCase refreshUserCase;
 
-    public AuthServiceImpl(LoginUserCase loginUserCase, RegisterUserCase registerUserCase, LogoutUserCase logoutUserCase, RefreshUserCase refreshUserCase) {
+    private final GetUserAuthenticationCase getUserAuthenticationCase;
+
+    public AuthServiceImpl(LoginUserCase loginUserCase, RegisterUserCase registerUserCase, LogoutUserCase logoutUserCase, RefreshUserCase refreshUserCase, GetUserAuthenticationCase getUserAuthenticationCase) {
         this.loginUserCase = loginUserCase;
         this.registerUserCase = registerUserCase;
         this.logoutUserCase = logoutUserCase;
         this.refreshUserCase = refreshUserCase;
+        this.getUserAuthenticationCase = getUserAuthenticationCase;
     }
 
     @Override
@@ -51,5 +52,10 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public JwtTokenDto refresh(UUID id, JwtTokenDto jwtTokenDto) {
         return refreshUserCase.execute(id, jwtTokenDto);
+    }
+
+    @Override
+    public UserGetResponse getUserAuthentication(UUID id) {
+        return getUserAuthenticationCase.execute(id);
     }
 }
