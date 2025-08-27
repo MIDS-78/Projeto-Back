@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResponseApiDto<Void>> handleInternalServerErrors(Exception ex) {
         // Para qualquer exceção não tratada, retorne 500 para evitar expor detalhes internos.
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ResponseApiDto.error(ex.getMessage(), "INTERNAL_SERVER_ERROR"));
+                .body(ResponseApiDto.error("An unexpected error occurred", "INTERNAL_SERVER_ERROR"));
     }
 
     @ExceptionHandler({HttpMessageNotReadableException.class, InvalidFormatException.class})
