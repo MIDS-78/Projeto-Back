@@ -60,7 +60,7 @@ public class TokenServiceImpl implements TokenService {
         String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails);
 
         Token accessTokenEntity = tokenMapper.toEntity(new JwtTokenDto(accessToken), user, TokenType.ACCESS, LocalDateTime.now().plusHours(jwtTokenProvider.getJwtExpirationInMs()));
-        Token refreshTokenEntity =  tokenMapper.toEntity(new JwtTokenDto(refreshToken), user, TokenType.ACCESS, LocalDateTime.now().plusHours(jwtTokenProvider.getJwtExpirationInMs()));
+        Token refreshTokenEntity = tokenMapper.toEntity(new JwtTokenDto(refreshToken), user, TokenType.ACCESS, LocalDateTime.now().plusHours(jwtTokenProvider.getJwtExpirationInMs()));
 
         tokenRepository.save(accessTokenEntity);
         tokenRepository.save(refreshTokenEntity);
