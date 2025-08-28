@@ -2,6 +2,7 @@ package com.weg.infoweg.infrastructure.exceptions;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.weg.infoweg.infrastructure.api.dto.ResponseApiDto;
+import com.weg.infoweg.modules.informative.domain.exception.InformativeException;
 import com.weg.infoweg.modules.token.domain.exceptions.TokenException;
 import com.weg.infoweg.modules.user.domain.exceptions.DomainException;
 import jakarta.validation.ValidationException;
@@ -88,5 +89,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(ResponseApiDto.error(message, "INVALID_CREDENTIALS"));
     }
 
-
+    @ExceptionHandler(InformativeException.class)
+    public ResponseEntity<ResponseApiDto<Void>> handleInformativeException(InformativeException informativeException){
+        String message = informativeException.getMessage();
+        return ResponseEntity.badRequest().body(ResponseApiDto.error(message, "INFORMATIVE_ERROR"));
+    }
+    
 }

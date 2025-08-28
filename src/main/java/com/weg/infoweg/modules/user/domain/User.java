@@ -66,6 +66,12 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
+    public boolean canDeleteInformative() {
+        return this.accessLevel == AccessLevel.COORDINATOR
+                || this.accessLevel == AccessLevel.ADMINISTRATOR
+                || this.accessLevel == AccessLevel.SECRETARY;
+    }
+
     public User() {
 
     }
