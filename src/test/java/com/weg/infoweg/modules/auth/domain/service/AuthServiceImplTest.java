@@ -1,15 +1,14 @@
 package com.weg.infoweg.modules.auth.domain.service;
 
-import com.weg.infoweg.modules.auth.aplication.dtos.login.UserLoginRequest;
-import com.weg.infoweg.modules.auth.aplication.dtos.login.UserLoginResponse;
-import com.weg.infoweg.modules.auth.aplication.dtos.register.UserRegisterRequest;
-import com.weg.infoweg.modules.auth.aplication.dtos.register.UserRegisterResponse;
+import com.weg.infoweg.modules.auth.application.dtos.login.UserLoginRequest;
+import com.weg.infoweg.modules.auth.application.dtos.login.UserLoginResponse;
+import com.weg.infoweg.modules.auth.application.dtos.register.UserRegisterRequest;
+import com.weg.infoweg.modules.auth.application.dtos.register.UserRegisterResponse;
 import com.weg.infoweg.modules.auth.domain.cases.LoginUserCase;
 import com.weg.infoweg.modules.auth.domain.cases.LogoutUserCase;
 import com.weg.infoweg.modules.auth.domain.cases.RefreshUserCase;
 import com.weg.infoweg.modules.auth.domain.cases.RegisterUserCase;
 import com.weg.infoweg.modules.token.application.dtos.JwtTokenDto;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

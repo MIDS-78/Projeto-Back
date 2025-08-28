@@ -1,16 +1,14 @@
 package com.weg.infoweg.modules.auth.domain.cases;
 
-import com.weg.infoweg.infrastructure.provider.JwtTokenProvider;
 import com.weg.infoweg.infrastructure.security.user.UserDetailsImpl;
 import com.weg.infoweg.modules.token.application.dtos.JwtTokenDto;
-import com.weg.infoweg.modules.auth.aplication.dtos.login.UserLoginRequest;
+import com.weg.infoweg.modules.auth.application.dtos.login.UserLoginRequest;
 import com.weg.infoweg.modules.auth.domain.exceptions.AuthenticationValidationException;
 import com.weg.infoweg.modules.token.application.port.TokenService;
 import jakarta.validation.Valid;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @Component

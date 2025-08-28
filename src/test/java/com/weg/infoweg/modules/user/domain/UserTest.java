@@ -1,6 +1,6 @@
 package com.weg.infoweg.modules.user.domain;
 
-import com.weg.infoweg.modules.user.aplication.dtos.*;
+import com.weg.infoweg.modules.user.application.dtos.*;
 import com.weg.infoweg.modules.user.domain.cases.*;
 import com.weg.infoweg.modules.user.domain.service.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;

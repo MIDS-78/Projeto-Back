@@ -1,8 +1,8 @@
 package com.weg.infoweg.modules.user.domain.cases;
 
 import com.weg.infoweg.infrastructure.persistence.user.mapper.UserCreateMapper;
-import com.weg.infoweg.modules.user.aplication.dtos.UserCreateRequest;
-import com.weg.infoweg.modules.user.aplication.dtos.UserCreateResponse;
+import com.weg.infoweg.modules.user.application.dtos.UserCreateRequest;
+import com.weg.infoweg.modules.user.application.dtos.UserCreateResponse;
 import com.weg.infoweg.modules.user.domain.User;
 import com.weg.infoweg.modules.user.domain.ports.UserRepository;
 import com.weg.infoweg.modules.user.domain.valueobjects.Email;

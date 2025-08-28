@@ -1,7 +1,7 @@
 package com.weg.infoweg.modules.user.domain.service;
 
-import com.weg.infoweg.modules.user.aplication.dtos.*;
-import com.weg.infoweg.modules.user.aplication.port.UserService;
+import com.weg.infoweg.modules.user.application.dtos.*;
+import com.weg.infoweg.modules.user.application.port.UserService;
 import com.weg.infoweg.modules.user.domain.cases.CreateUserCase;
 import com.weg.infoweg.modules.user.domain.cases.DeleteUserCase;
 import com.weg.infoweg.modules.user.domain.cases.GetUserCase;

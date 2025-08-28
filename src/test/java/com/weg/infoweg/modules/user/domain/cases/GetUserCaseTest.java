@@ -1,7 +1,7 @@
 package com.weg.infoweg.modules.user.domain.cases;
 
-import com.weg.infoweg.modules.user.aplication.dtos.UserGetRequest;
-import com.weg.infoweg.modules.user.aplication.dtos.UserGetResponse;
+import com.weg.infoweg.modules.user.application.dtos.UserGetRequest;
+import com.weg.infoweg.modules.user.application.dtos.UserGetResponse;
 import com.weg.infoweg.modules.user.domain.User;
 import com.weg.infoweg.modules.user.domain.enums.AccessLevel;
 import com.weg.infoweg.modules.user.domain.exceptions.UserNotFoundException;

@@ -1,6 +1,6 @@
 package com.weg.infoweg.modules.user.domain.cases;
 
-import com.weg.infoweg.modules.user.aplication.dtos.UserDeleteRequest;
+import com.weg.infoweg.modules.user.application.dtos.UserDeleteRequest;
 import com.weg.infoweg.modules.user.domain.User;
 import com.weg.infoweg.modules.user.domain.ports.UserRepository;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,8 +1,8 @@
 package com.weg.infoweg.modules.auth.domain.cases;
 
 import com.weg.infoweg.infrastructure.persistence.user.mapper.UserRegisterMapper;
-import com.weg.infoweg.modules.auth.aplication.dtos.register.UserRegisterRequest;
-import com.weg.infoweg.modules.auth.aplication.dtos.register.UserRegisterResponse;
+import com.weg.infoweg.modules.auth.application.dtos.register.UserRegisterRequest;
+import com.weg.infoweg.modules.auth.application.dtos.register.UserRegisterResponse;
 import com.weg.infoweg.modules.auth.domain.exceptions.EmailInvalidException;
 import com.weg.infoweg.modules.auth.domain.exceptions.UsernameInvalidException;
 import com.weg.infoweg.modules.auth.domain.ports.PasswordEncoderCrypto;

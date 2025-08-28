@@ -1,16 +1,14 @@
 package com.weg.infoweg.modules.user.domain.cases;
 
 import com.weg.infoweg.infrastructure.persistence.user.mapper.UserUpdateMapper;
-import com.weg.infoweg.modules.user.aplication.dtos.UserUpdateRequest;
-import com.weg.infoweg.modules.user.aplication.dtos.UserUpdateResponse;
+import com.weg.infoweg.modules.user.application.dtos.UserUpdateRequest;
+import com.weg.infoweg.modules.user.application.dtos.UserUpdateResponse;
 import com.weg.infoweg.modules.user.domain.User;
 import com.weg.infoweg.modules.user.domain.exceptions.UserNotFoundException;
 import com.weg.infoweg.modules.user.domain.ports.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 
 @Component

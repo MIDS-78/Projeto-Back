@@ -1,8 +1,6 @@
 package com.weg.infoweg.modules.user.domain.cases;
-import java.util.UUID;
 
-import com.weg.infoweg.modules.user.aplication.dtos.UserDeleteRequest;
-import com.weg.infoweg.modules.user.aplication.dtos.UserDeleteResponse;
+import com.weg.infoweg.modules.user.application.dtos.UserDeleteRequest;
 import com.weg.infoweg.modules.user.domain.User;
 import com.weg.infoweg.modules.user.domain.ports.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

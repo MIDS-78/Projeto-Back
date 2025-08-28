@@ -1,8 +1,8 @@
 package com.weg.infoweg.infrastructure.security;
 
-import com.weg.infoweg.modules.auth.aplication.dtos.login.UserLoginRequest;
-import com.weg.infoweg.modules.auth.aplication.dtos.login.UserLoginResponse;
-import com.weg.infoweg.modules.auth.aplication.port.AuthService; // Importe este
+import com.weg.infoweg.modules.auth.application.dtos.login.UserLoginRequest;
+import com.weg.infoweg.modules.auth.application.dtos.login.UserLoginResponse;
+import com.weg.infoweg.modules.auth.application.port.AuthService; // Importe este
 import com.weg.infoweg.modules.token.application.dtos.JwtTokenDto; // Importe este
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
