@@ -3,10 +3,13 @@ package com.weg.infoweg.modules.informative.domain.cases;
 import com.weg.infoweg.modules.informative.Informative;
 import com.weg.infoweg.modules.informative.aplication.dtos.InformativeDeleteRequest;
 import com.weg.infoweg.modules.informative.domain.exception.InformativeNotFoundException;
+import com.weg.infoweg.modules.informative.domain.exception.UserWithoutPermissionInformativeException;
 import com.weg.infoweg.modules.informative.ports.InformativeRepository;
+import com.weg.infoweg.modules.user.domain.User;
+import com.weg.infoweg.modules.user.domain.exceptions.UserNotFoundException;
+import com.weg.infoweg.modules.user.domain.ports.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -17,48 +20,102 @@ import static org.mockito.Mockito.*;
 class DeleteInformativeCaseTest {
 
     private InformativeRepository informativeRepository;
+    private UserRepository userRepository;
     private DeleteInformativeCase deleteInformativeCase;
 
     @BeforeEach
     void setUp() {
-        informativeRepository = Mockito.mock(InformativeRepository.class);
-        deleteInformativeCase = new DeleteInformativeCase(informativeRepository);
+        informativeRepository = mock(InformativeRepository.class);
+        userRepository = mock(UserRepository.class);
+        deleteInformativeCase = new DeleteInformativeCase(informativeRepository, userRepository);
     }
 
     @Test
-    void execute_shouldDelete_whenInformativeExists() {
-        UUID id = UUID.fromString("f738ef97-67fb-4887-ace8-9c1afa1e8dda");
+    void execute_shouldDelete_whenUserHasPermissionAndInformativeExists() {
+        UUID userId = UUID.randomUUID();
+        UUID informativeId = UUID.randomUUID();
 
-        // Simula que o findById encontrou um Informative real
-        Informative informative = new Informative(); // precisa ter construtor público
-        when(informativeRepository.findById(id)).thenReturn(Optional.of(informative));
+        // Usuário com permissão
+        User user = mock(User.class);
+        when(user.canDeleteInformative()).thenReturn(true);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        InformativeDeleteRequest request = new InformativeDeleteRequest(id);
+        // Informativo existente
+        Informative informative = new Informative();
+        when(informativeRepository.findById(informativeId)).thenReturn(Optional.of(informative));
 
-        // Executa e verifica que não lança exceção
-        assertDoesNotThrow(() -> deleteInformativeCase.execute(request));
+        InformativeDeleteRequest request = new InformativeDeleteRequest(informativeId);
 
-        // Verifica se o deleteById foi chamado
-        verify(informativeRepository).deleteById(id);
+        // Executa sem lançar exceção
+        assertDoesNotThrow(() -> deleteInformativeCase.execute(request, userId));
+
+        // Verifica se foi realmente deletado
+        verify(informativeRepository).deleteById(informativeId);
+    }
+
+    @Test
+    void execute_shouldThrowException_whenUserHasNoPermission() {
+        UUID userId = UUID.randomUUID();
+        UUID informativeId = UUID.randomUUID();
+
+        // Usuário sem permissão
+        User user = mock(User.class);
+        when(user.canDeleteInformative()).thenReturn(false);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        InformativeDeleteRequest request = new InformativeDeleteRequest(informativeId);
+
+        UserWithoutPermissionInformativeException exception = assertThrows(
+                UserWithoutPermissionInformativeException.class,
+                () -> deleteInformativeCase.execute(request, userId)
+        );
+
+        assertEquals("User is not authorized to delete informatives", exception.getMessage());
+
+        verify(informativeRepository, never()).deleteById(any());
+    }
+
+    @Test
+    void execute_shouldThrowException_whenUserNotFound() {
+        UUID userId = UUID.randomUUID();
+        UUID informativeId = UUID.randomUUID();
+
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        InformativeDeleteRequest request = new InformativeDeleteRequest(informativeId);
+
+        UserNotFoundException exception = assertThrows(
+                UserNotFoundException.class,
+                () -> deleteInformativeCase.execute(request, userId)
+        );
+
+        assertEquals(new UserNotFoundException("User not found").getMessage(), exception.getMessage());
+
+        verify(informativeRepository, never()).deleteById(any());
     }
 
     @Test
     void execute_shouldThrowException_whenInformativeDoesNotExist() {
-        UUID id = UUID.fromString("f738ef97-67fb-4887-ace8-9c1afa1e8dda");
+        UUID userId = UUID.randomUUID();
+        UUID informativeId = UUID.randomUUID();
 
-        when(informativeRepository.findById(id)).thenReturn(Optional.empty());
+        // Usuário com permissão
+        User user = mock(User.class);
+        when(user.canDeleteInformative()).thenReturn(true);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        InformativeDeleteRequest request = new InformativeDeleteRequest(id);
+        // Informativo inexistente
+        when(informativeRepository.findById(informativeId)).thenReturn(Optional.empty());
 
-        // Verifica se lança a InformativeNotFoundException
+        InformativeDeleteRequest request = new InformativeDeleteRequest(informativeId);
+
         InformativeNotFoundException exception = assertThrows(
                 InformativeNotFoundException.class,
-                () -> deleteInformativeCase.execute(request)
+                () -> deleteInformativeCase.execute(request, userId)
         );
 
-        assertEquals("Record not found by ID: " + id, exception.getMessage());
+        assertEquals("Record not found by ID: " + informativeId, exception.getMessage());
 
-        // Verifica que deleteById nunca foi chamado
-        verify(informativeRepository, never()).deleteById(id);
+        verify(informativeRepository, never()).deleteById(any());
     }
 }
