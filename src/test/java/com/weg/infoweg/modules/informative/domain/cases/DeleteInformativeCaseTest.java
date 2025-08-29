@@ -1,6 +1,6 @@
 package com.weg.infoweg.modules.informative.domain.cases;
 
-import com.weg.infoweg.modules.informative.Informative;
+import com.weg.infoweg.modules.informative.domain.Informative;
 import com.weg.infoweg.modules.informative.aplication.dtos.InformativeDeleteRequest;
 import com.weg.infoweg.modules.informative.domain.exception.InformativeNotFoundException;
 import com.weg.infoweg.modules.informative.domain.exception.UserWithoutPermissionInformativeException;

@@ -2,7 +2,7 @@ package com.weg.infoweg.modules.informative.ports;
 
 
 
-import com.weg.infoweg.modules.informative.Informative;
+import com.weg.infoweg.modules.informative.domain.Informative;
 
 import java.util.Optional;
 import java.util.UUID;
