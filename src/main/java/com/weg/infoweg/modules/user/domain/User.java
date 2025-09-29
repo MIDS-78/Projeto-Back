@@ -1,10 +1,17 @@
 package com.weg.infoweg.modules.user.domain;
 
+import com.weg.infoweg.infrastructure.persistence.user.converter.EmailConverter;
 import com.weg.infoweg.modules.user.domain.enums.AccessLevel;
+import com.weg.infoweg.modules.user.domain.exceptions.*;
 import jakarta.persistence.*;
+import com.weg.infoweg.modules.user.domain.valueobjects.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -12,21 +19,21 @@ import java.util.UUID;
 public class User {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(updatable = false, nullable = false)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id")
     private UUID id;
 
-    @Column(nullable = false, unique = true, length = 60)
+    @Column(name = "username")
     private String username;
 
-    @Column(nullable = false, unique = true, length = 100)
-    private String email;
+    @Convert(converter = EmailConverter.class)
+    @Column(name = "email")
+    private Email email;
 
-    @Column(name = "password_hash", nullable = false)
-    private byte[] passwordHash;  // Recomendo usar byte[] para hash
+    @Column(name = "password_hash")
+    private String passwordHash;
 
-    @Column(name = "phone_number", nullable = false, length = 40)
+    @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
@@ -34,18 +41,19 @@ public class User {
     private AccessLevel accessLevel;
 
     @Column(name = "created_by")
-    private Integer createdBy;
+    private UUID createdBy;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "updated_by")
-    private Integer updatedBy;
+    private UUID updatedBy;
 
     @Column(name = "updated_at", nullable = false)
+    @UpdateTimestamp
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    public User(UUID id, String username, String email, byte[] passwordHash, String phoneNumber, AccessLevel accessLevel, Integer createdBy, LocalDateTime createdAt, Integer updatedBy, LocalDateTime updatedAt) {
+    public User(UUID id, String username, Email email, String passwordHash, String phoneNumber, AccessLevel accessLevel, UUID createdBy, LocalDateTime createdAt, UUID updatedBy, LocalDateTime updatedAt) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -56,85 +64,171 @@ public class User {
         this.createdAt = createdAt;
         this.updatedBy = updatedBy;
         this.updatedAt = updatedAt;
+    }
+
+    public boolean canDeleteInformative() {
+        return this.accessLevel == AccessLevel.COORDINATOR
+                || this.accessLevel == AccessLevel.ADMINISTRATOR
+                || this.accessLevel == AccessLevel.SECRETARY;
+    }
+
+    public User() {
+
+    }
+
+    public User(String username, Email email, String password, String phoneNumber, AccessLevel accessLevel) {
+        this.id = null;
+        this.username = username;
+        this.email = email;
+        this.passwordHash = password;
+        this.phoneNumber = phoneNumber;
+        this.accessLevel = accessLevel;
+        this.updatedBy = null;
+        this.createdAt = null;
+        this.updatedAt = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public User(UUID id , String username, Email email, String password, String phoneNumber, AccessLevel accessLevel) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.passwordHash = password;
+        this.phoneNumber = phoneNumber;
+        this.accessLevel = accessLevel;
+        this.updatedBy = null;
+        this.createdAt = null;
+        this.updatedAt = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
     }
 
     public UUID getId() {
         return id;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getEmail() {
+    public Email getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public byte[] getPasswordHash() {
+    public String getPasswordHash() {
         return passwordHash;
-    }
-
-    public void setPasswordHash(byte[] passwordHash) {
-        this.passwordHash = passwordHash;
     }
 
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
     public AccessLevel getAccessLevel() {
         return accessLevel;
     }
 
-    public void setAccessLevel(AccessLevel accessLevel) {
-        this.accessLevel = accessLevel;
-    }
-
-    public Integer getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(Integer createdBy) {
-        this.createdBy = createdBy;
-    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Integer getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(Integer updatedBy) {
-        this.updatedBy = updatedBy;
     }
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
+    // SETTERS COM VALIDAÇÕES
+
+    public void setId(UUID id) {
+        if (id == null) {
+            throw new InvalidIdException("ID cannot be null.");
+        }
+        this.id = id;
+    }
+
+    public void setUsername(String username) {
+        if (username == null || username.trim().isEmpty()) {
+            throw new InvalidUsernameException("Username cannot be null or empty");
+        }
+        if (username.length() > 60) {
+            throw new InvalidUsernameException("Username is too long");
+        }
+        this.username = username.trim();
+    }
+
+    public void setEmail(Email email) {
+        if (email == null) {
+            throw new InvalidEmailException("Email cannot be null or empty.");
+        }
+        this.email = email;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        if (passwordHash == null || passwordHash.isEmpty()) {
+            throw new InvalidPasswordException("Password hash cannot be null or empty.");
+        }
+        this.passwordHash = passwordHash;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
+            throw new InvalidPhoneNumberException("Phone number cannot be null or empty.");
+        }
+
+        String onlyDigits = phoneNumber.replaceAll("[^\\d]", "");
+        if (onlyDigits.length() < 10 || onlyDigits.length() > 15) {
+            throw new InvalidPhoneNumberException("Must contain between 10 and 15 digits.");
+        }
+
+        this.phoneNumber = onlyDigits;
+    }
+
+    public void setAccessLevel(AccessLevel accessLevel) {
+        if (accessLevel == null) {
+            throw new InvalidAccessLevelException("Access level cannot be null.");
+        }
+        this.accessLevel = accessLevel;
+    }
+
+    public UUID getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(UUID createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        if (createdAt == null) {
+            throw new InvalidDateException("CreatedAt cannot be null.");
+        }
+        this.createdAt = createdAt;
+    }
+
+    public UUID getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(UUID updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
     public void setUpdatedAt(LocalDateTime updatedAt) {
+        if (updatedAt == null) {
+            throw new InvalidDateException("UpdatedAt cannot be null.");
+        }
         this.updatedAt = updatedAt;
+    }
+
+    // equals & hashCode
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User user)) return false;
+        return id.equals(user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
